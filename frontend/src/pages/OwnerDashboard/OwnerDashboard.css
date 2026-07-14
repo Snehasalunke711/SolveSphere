@@ -1,0 +1,183 @@
+.owner-dashboard-page {
+  min-height: 100vh;
+  background: #f5f9ff;
+}
+
+.owner-dashboard-header {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 65px 8% 45px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.owner-dashboard-header span {
+  color: #3b82f6;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.owner-dashboard-header h1 {
+  margin: 15px 0 15px;
+  color: #1e3a5f;
+  font-size: 46px;
+}
+
+.owner-dashboard-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 16px;
+}
+
+.post-problem-button {
+  padding: 14px 22px;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.post-problem-button:hover {
+  background: #2563eb;
+}
+
+.owner-dashboard-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 8% 100px;
+}
+
+.owner-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.owner-stat-card {
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 15px;
+}
+
+.owner-stat-card span {
+  display: block;
+  margin-bottom: 14px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.owner-stat-card strong {
+  color: #1e3a5f;
+  font-size: 35px;
+}
+
+.owner-problems-section {
+  margin-top: 55px;
+}
+
+.owner-section-heading h2 {
+  margin: 0 0 8px;
+  color: #1e3a5f;
+  font-size: 28px;
+}
+
+.owner-section-heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.owner-problems-list {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.owner-problem-card {
+  padding: 25px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+}
+
+.owner-problem-category {
+  color: #3b82f6;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+}
+
+.owner-problem-card h3 {
+  margin: 10px 0 9px;
+  color: #1e3a5f;
+  font-size: 19px;
+}
+
+.owner-problem-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.owner-problem-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.owner-status {
+  padding: 7px 11px;
+  background: #eff6ff;
+  color: #3b82f6;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.owner-problem-actions a {
+  padding: 11px 16px;
+  background: #3b82f6;
+  color: #ffffff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (max-width: 750px) {
+  .owner-dashboard-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .owner-dashboard-header h1 {
+    font-size: 36px;
+  }
+
+  .owner-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .owner-problem-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .owner-problem-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
