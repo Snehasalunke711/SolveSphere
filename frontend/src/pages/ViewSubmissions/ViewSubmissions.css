@@ -1,0 +1,143 @@
+.view-submissions-page {
+  min-height: 100vh;
+  background: #f5f9ff;
+}
+
+.submissions-header {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 65px 8% 45px;
+}
+
+.submissions-header > a {
+  display: inline-block;
+  margin-bottom: 38px;
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.submissions-header > span {
+  display: block;
+  color: #3b82f6;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.submissions-header h1 {
+  margin: 15px 0 18px;
+  color: #1e3a5f;
+  font-size: 46px;
+}
+
+.submissions-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 16px;
+}
+
+.submissions-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 8% 100px;
+}
+
+.submissions-summary {
+  margin-bottom: 25px;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  background: #eaf3ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+}
+
+.submissions-summary span {
+  color: #3b82f6;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.submissions-summary strong {
+  color: #1e3a5f;
+  font-size: 14px;
+}
+
+.submissions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.submission-card {
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 15px;
+}
+
+.submission-card-content > span {
+  color: #3b82f6;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.submission-card h2 {
+  margin: 12px 0;
+  color: #1e3a5f;
+  font-size: 22px;
+}
+
+.submission-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.submission-meta {
+  margin-top: 18px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.submission-meta span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.review-submission-button {
+  padding: 12px 18px;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.review-submission-button:hover {
+  background: #2563eb;
+}
+
+@media (max-width: 700px) {
+  .submissions-header h1 {
+    font-size: 36px;
+  }
+
+  .submissions-summary,
+  .submission-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
