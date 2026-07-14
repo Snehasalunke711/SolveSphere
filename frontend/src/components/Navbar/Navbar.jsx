@@ -1,21 +1,27 @@
+import { Link } from "react-router";
 import "./Navbar.css";
 
 function Navbar() {
   return (
     <nav className="navbar">
-      <div className="navbar-logo">
+      <Link to="/" className="navbar-logo">
         Solve<span>Sphere</span>
-      </div>
+      </Link>
 
       <div className="navbar-links">
-        <a href="#">Home</a>
-        <a href="#">Explore Problems</a>
-        <a href="#">How It Works</a>
+        <Link to="/">Home</Link>
+        <Link to="/explore">Explore Problems</Link>
+        <a href="/#how-it-works">How It Works</a>
       </div>
 
       <div className="navbar-actions">
-        <button className="login-button">Login</button>
-        <button className="signup-button">Get Started</button>
+        <Link to="/login">
+          <button className="login-button">Login</button>
+        </Link>
+
+        <Link to="/register">
+          <button className="signup-button">Get Started</button>
+        </Link>
       </div>
     </nav>
   );
