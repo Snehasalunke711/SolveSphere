@@ -34,14 +34,18 @@ function OwnerDashboard() {
       <section className="owner-dashboard-header">
         <div>
           <span>PROBLEM OWNER DASHBOARD</span>
+
           <h1>Manage Your Challenges</h1>
+
           <p>
             Track problems, review submissions, and discover promising
             solutions.
           </p>
         </div>
 
-        <button className="post-problem-button">+ Post New Problem</button>
+        <Link to="/post-problem" className="post-problem-button">
+          + Post New Problem
+        </Link>
       </section>
 
       <section className="owner-dashboard-content">
@@ -65,12 +69,18 @@ function OwnerDashboard() {
         <div className="owner-problems-section">
           <div className="owner-section-heading">
             <h2>Your Problems</h2>
-            <p>Manage challenges and review submitted solutions.</p>
+
+            <p>
+              Manage challenges and review submitted solutions.
+            </p>
           </div>
 
           <div className="owner-problems-list">
             {ownerProblems.map((problem) => (
-              <article className="owner-problem-card" key={problem.id}>
+              <article
+                className="owner-problem-card"
+                key={problem.id}
+              >
                 <div>
                   <span className="owner-problem-category">
                     {problem.category}
@@ -78,11 +88,15 @@ function OwnerDashboard() {
 
                   <h3>{problem.title}</h3>
 
-                  <p>{problem.submissions} solutions submitted</p>
+                  <p>
+                    {problem.submissions} solutions submitted
+                  </p>
                 </div>
 
                 <div className="owner-problem-actions">
-                  <span className="owner-status">{problem.status}</span>
+                  <span className="owner-status">
+                    {problem.status}
+                  </span>
 
                   <Link to={`/submissions/${problem.id}`}>
                     View Submissions

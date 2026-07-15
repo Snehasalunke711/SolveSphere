@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import "./Profile.css";
 
@@ -10,6 +11,41 @@ const skills = [
 ];
 
 function Profile() {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [profile, setProfile] = useState({
+    name: "Shree P",
+    email: "shree@example.com",
+    role: "Problem Solver",
+    college: "New Horizon College of Engineering",
+  });
+
+  const [formData, setFormData] = useState(profile);
+
+  const handleEdit = () => {
+    setFormData(profile);
+    setIsEditing(true);
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSave = () => {
+    setProfile(formData);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setFormData(profile);
+    setIsEditing(false);
+  };
+
   return (
     <main className="profile-page">
       <Navbar />
@@ -28,9 +64,9 @@ function Profile() {
         <aside className="profile-summary-card">
           <div className="profile-avatar">SP</div>
 
-          <h2>Shree P</h2>
+          <h2>{profile.name}</h2>
 
-          <p>Problem Solver</p>
+          <p>{profile.role}</p>
 
           <div className="profile-summary-info">
             <div>
@@ -53,30 +89,92 @@ function Profile() {
                 <h2>Profile Details</h2>
               </div>
 
-              <button>Edit Profile</button>
+              {!isEditing && (
+                <button onClick={handleEdit}>Edit Profile</button>
+              )}
             </div>
 
-            <div className="profile-info-grid">
-              <div>
-                <span>Full Name</span>
-                <strong>Shree P</strong>
-              </div>
+            {isEditing ? (
+              <div className="profile-edit-form">
+                <div>
+                  <label>Full Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                  />
+                </div>
 
-              <div>
-                <span>Email Address</span>
-                <strong>shree@example.com</strong>
-              </div>
+                <div>
+                  <label>Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </div>
 
-              <div>
-                <span>Role</span>
-                <strong>Problem Solver</strong>
-              </div>
+                <div>
+                  <label>Role</label>
+                  <input
+                    type="text"
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                  />
+                </div>
 
-              <div>
-                <span>College</span>
-                <strong>New Horizon College of Engineering</strong>
+                <div>
+                  <label>College</label>
+                  <input
+                    type="text"
+                    name="college"
+                    value={formData.college}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="profile-edit-actions">
+                  <button
+                    className="profile-save-button"
+                    onClick={handleSave}
+                  >
+                    Save Changes
+                  </button>
+
+                  <button
+                    className="profile-cancel-button"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="profile-info-grid">
+                <div>
+                  <span>Full Name</span>
+                  <strong>{profile.name}</strong>
+                </div>
+
+                <div>
+                  <span>Email Address</span>
+                  <strong>{profile.email}</strong>
+                </div>
+
+                <div>
+                  <span>Role</span>
+                  <strong>{profile.role}</strong>
+                </div>
+
+                <div>
+                  <span>College</span>
+                  <strong>{profile.college}</strong>
+                </div>
+              </div>
+            )}
           </section>
 
           <section className="profile-details-card">

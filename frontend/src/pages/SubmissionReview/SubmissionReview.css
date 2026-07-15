@@ -1,0 +1,150 @@
+.submission-review-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.submission-review-header {
+  padding: 70px 8% 50px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.review-back-link {
+  display: inline-block;
+  margin-bottom: 30px;
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.submission-review-header > span {
+  display: block;
+  margin-bottom: 12px;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.submission-review-header h1 {
+  margin: 0 0 18px;
+  font-size: 44px;
+  line-height: 1.2;
+}
+
+.submission-review-header p {
+  max-width: 650px;
+  margin: 0;
+  color: #64748b;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.submission-review-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 8%;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 35px;
+  align-items: start;
+}
+
+.review-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.review-card,
+.review-sidebar {
+  padding: 30px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.review-label,
+.review-sidebar > span {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+.review-card h2 {
+  margin: 12px 0 14px;
+  font-size: 23px;
+}
+
+.review-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.review-sidebar h3 {
+  margin: 15px 0 12px;
+  font-size: 24px;
+}
+
+.review-sidebar p {
+  margin-bottom: 28px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.approve-button,
+.reject-button {
+  width: 100%;
+  padding: 13px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.approve-button {
+  margin-bottom: 12px;
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.approve-button:hover {
+  background: #1d4ed8;
+}
+
+.reject-button {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+}
+
+.reject-button:hover {
+  background: #f1f5f9;
+}
+
+@media (max-width: 800px) {
+  .submission-review-content {
+    grid-template-columns: 1fr;
+  }
+
+  .submission-review-header h1 {
+    font-size: 34px;
+  }
+}
+.review-status-message {
+  margin: 18px 0 0;
+  padding: 12px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  color: #1d4ed8;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
