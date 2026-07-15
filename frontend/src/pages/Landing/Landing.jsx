@@ -1,9 +1,11 @@
-import { Link } from "react-router";
 import "./Landing.css";
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
+import { useNavigate } from "react-router";
 
 function Landing() {
+  const navigate = useNavigate();
+
   return (
     <main className="landing-page">
       <Navbar />
@@ -20,13 +22,19 @@ function Landing() {
           </p>
 
           <div className="hero-buttons">
-            <Link to="/explore">
-              <button className="primary-button">Explore Problems</button>
-            </Link>
+            <button
+              className="primary-button"
+              onClick={() => navigate("/explore")}
+            >
+              Explore Problems
+            </button>
 
-            <Link to="/register">
-              <button className="secondary-button">Post a Problem</button>
-            </Link>
+            <button
+              className="secondary-button"
+              onClick={() => navigate("/post-problem")}
+            >
+              Post a Problem
+            </button>
           </div>
         </div>
       </section>
@@ -34,7 +42,9 @@ function Landing() {
       <section className="how-it-works" id="how-it-works">
         <div className="section-heading">
           <span>HOW IT WORKS</span>
+
           <h2>From Problem to Solution</h2>
+
           <p>
             SolveSphere makes collaboration simple, transparent, and focused
             on building real solutions.
@@ -44,7 +54,9 @@ function Landing() {
         <div className="steps-container">
           <div className="step-card">
             <div className="step-number">01</div>
+
             <h3>Post a Problem</h3>
+
             <p>
               Share a real-world challenge and explain the problem that needs
               to be solved.
@@ -53,7 +65,9 @@ function Landing() {
 
           <div className="step-card">
             <div className="step-number">02</div>
+
             <h3>Collaborate & Solve</h3>
+
             <p>
               Problem solvers explore challenges, build ideas, and submit their
               solutions.
@@ -62,7 +76,9 @@ function Landing() {
 
           <div className="step-card">
             <div className="step-number">03</div>
+
             <h3>Review Solutions</h3>
+
             <p>
               Problem owners review submissions and discover promising
               solutions.
@@ -74,7 +90,9 @@ function Landing() {
       <section className="roles-section">
         <div className="section-heading">
           <span>BUILT FOR COLLABORATION</span>
+
           <h2>One Platform. Two Powerful Roles.</h2>
+
           <p>
             Whether you have a problem that needs solving or the skills to build
             a solution, SolveSphere gives you a place to collaborate.
@@ -99,9 +117,12 @@ function Landing() {
               <li>Discover promising ideas</li>
             </ul>
 
-            <Link to="/register">
-              <button className="role-button">Post a Problem</button>
-            </Link>
+            <button
+              className="role-button"
+              onClick={() => navigate("/post-problem")}
+            >
+              Post a Problem
+            </button>
           </div>
 
           <div className="role-card solver-card">
@@ -121,9 +142,12 @@ function Landing() {
               <li>Submit completed projects</li>
             </ul>
 
-            <Link to="/explore">
-              <button className="role-button">Explore Problems</button>
-            </Link>
+            <button
+              className="role-button"
+              onClick={() => navigate("/explore")}
+            >
+              Explore Problems
+            </button>
           </div>
         </div>
       </section>
@@ -144,6 +168,7 @@ function Landing() {
             <div className="ai-features">
               <div className="ai-feature">
                 <h4>Problem Understanding</h4>
+
                 <p>
                   AI analyzes the challenge and highlights important
                   requirements.
@@ -152,6 +177,7 @@ function Landing() {
 
               <div className="ai-feature">
                 <h4>Smart Suggestions</h4>
+
                 <p>
                   Receive useful approaches and ideas based on the selected
                   problem.
@@ -160,6 +186,7 @@ function Landing() {
 
               <div className="ai-feature">
                 <h4>Technology Guidance</h4>
+
                 <p>
                   Discover suitable technologies and tools for building the
                   solution.
@@ -176,6 +203,7 @@ function Landing() {
 
             <div className="ai-message">
               <span>Problem Analysis</span>
+
               <p>
                 This problem focuses on improving waste collection efficiency
                 in urban areas.
@@ -184,6 +212,7 @@ function Landing() {
 
             <div className="ai-message">
               <span>Suggested Approach</span>
+
               <p>
                 Consider a location-based monitoring system with route
                 optimization.
@@ -192,6 +221,7 @@ function Landing() {
 
             <div className="ai-message">
               <span>Recommended Tech</span>
+
               <p>React · FastAPI · Python · Machine Learning</p>
             </div>
           </div>
@@ -208,13 +238,19 @@ function Landing() {
           </p>
 
           <div className="cta-buttons">
-            <Link to="/explore">
-              <button className="cta-primary">Explore Problems</button>
-            </Link>
+            <button
+              className="cta-primary"
+              onClick={() => navigate("/explore")}
+            >
+              Explore Problems
+            </button>
 
-            <Link to="/register">
-              <button className="cta-secondary">Post a Problem</button>
-            </Link>
+            <button
+              className="cta-secondary"
+              onClick={() => navigate("/post-problem")}
+            >
+              Post a Problem
+            </button>
           </div>
         </div>
       </section>

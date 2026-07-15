@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import "./ExploreProblems.css";
 
@@ -54,6 +55,23 @@ const problems = [
 ];
 
 function ExploreProblems() {
+  const [selectedCategory, setSelectedCategory] = useState("ALL");
+
+  const categories = [
+    "ALL",
+    "SMART CITY",
+    "HEALTHCARE",
+    "EDUCATION",
+    "ENVIRONMENT",
+  ];
+
+  const filteredProblems =
+    selectedCategory === "ALL"
+      ? problems
+      : problems.filter(
+          (problem) => problem.category === selectedCategory
+        );
+
   return (
     <main className="explore-page">
       <Navbar />
@@ -71,20 +89,30 @@ function ExploreProblems() {
 
       <section className="explore-content">
         <div className="problem-filters">
-          <button className="active-filter">All Problems</button>
-          <button>Smart City</button>
-          <button>Healthcare</button>
-          <button>Education</button>
-          <button>Environment</button>
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={
+                selectedCategory === category ? "active-filter" : ""
+              }
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category === "ALL" ? "All Problems" : category}
+            </button>
+          ))}
         </div>
 
         <div className="problems-grid">
-          {problems.map((problem) => (
+          {filteredProblems.map((problem) => (
             <article className="explore-problem-card" key={problem.id}>
               <div className="problem-card-top">
-                <span className="explore-category">{problem.category}</span>
+                <span className="explore-category">
+                  {problem.category}
+                </span>
 
-                <span className="difficulty">{problem.difficulty}</span>
+                <span className="difficulty">
+                  {problem.difficulty}
+                </span>
               </div>
 
               <h2>{problem.title}</h2>

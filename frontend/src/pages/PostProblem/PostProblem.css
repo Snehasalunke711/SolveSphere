@@ -1,0 +1,133 @@
+.post-problem-page {
+  min-height: 100vh;
+  background: #f5f9ff;
+}
+
+.post-problem-header {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 65px 8% 40px;
+}
+
+.post-problem-header > span {
+  color: #3b82f6;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.post-problem-header h1 {
+  margin: 15px 0 18px;
+  color: #1e3a5f;
+  font-size: 46px;
+}
+
+.post-problem-header p {
+  max-width: 650px;
+  margin: 0;
+  color: #64748b;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.post-problem-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 10px 8% 100px;
+}
+
+.post-problem-form {
+  padding: 38px;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 18px;
+}
+
+.problem-form-group {
+  margin-bottom: 25px;
+}
+
+.problem-form-group label {
+  display: block;
+  margin-bottom: 9px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.problem-form-group input,
+.problem-form-group select,
+.problem-form-group textarea {
+  width: 100%;
+  padding: 14px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  box-sizing: border-box;
+  color: #334155;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.problem-form-group textarea {
+  resize: vertical;
+}
+
+.problem-form-group input:focus,
+.problem-form-group select:focus,
+.problem-form-group textarea:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px #dbeafe;
+}
+
+.post-problem-actions {
+  margin-top: 35px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.problem-cancel-button,
+.problem-submit-button {
+  padding: 13px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.problem-cancel-button {
+  background: #ffffff;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+.problem-submit-button {
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+}
+
+.problem-submit-button:hover {
+  background: #2563eb;
+}
+
+@media (max-width: 600px) {
+  .post-problem-header h1 {
+    font-size: 36px;
+  }
+
+  .post-problem-form {
+    padding: 25px 20px;
+  }
+
+  .post-problem-actions {
+    flex-direction: column-reverse;
+  }
+
+  .problem-cancel-button,
+  .problem-submit-button {
+    width: 100%;
+  }
+}

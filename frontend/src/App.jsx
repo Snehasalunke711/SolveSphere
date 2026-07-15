@@ -11,6 +11,8 @@ import AISuggestions from "./pages/AISuggestions/AISuggestions";
 import Profile from "./pages/Profile/Profile";
 import OwnerDashboard from "./pages/OwnerDashboard/OwnerDashboard";
 import ViewSubmissions from "./pages/ViewSubmissions/ViewSubmissions";
+import PostProblem from "./pages/PostProblem/PostProblem";
+import SubmissionReview from "./pages/SubmissionReview/SubmissionReview";
 
 function App() {
   return (
@@ -26,6 +28,11 @@ function App() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/owner-dashboard" element={<OwnerDashboard />} />
       <Route path="/submissions/:id" element={<ViewSubmissions />} />
+      <Route path="/post-problem" element={<PostProblem />} />
+      <Route
+  path="/submission-review/:id"
+  element={<SubmissionReview />}
+/>
     </Routes>
   );
 }

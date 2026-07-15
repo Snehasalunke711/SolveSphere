@@ -9,7 +9,6 @@ function Navbar() {
       </Link>
 
       <div className="navbar-links">
-        <Link to="/">Home</Link>
         <Link to="/explore">Explore Problems</Link>
         <a href="/#how-it-works">How It Works</a>
       </div>
@@ -20,7 +19,7 @@ function Navbar() {
         </Link>
 
         <Link to="/register">
-          <button className="signup-button">Get Started</button>
+          <button className="signup-button">Sign Up</button>
         </Link>
       </div>
     </nav>

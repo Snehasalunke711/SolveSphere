@@ -52,12 +52,18 @@ function ViewSubmissions() {
       <section className="submissions-content">
         <div className="submissions-summary">
           <span>Problem #{id}</span>
-          <strong>{submissions.length} submissions available</strong>
+
+          <strong>
+            {submissions.length} submissions available
+          </strong>
         </div>
 
         <div className="submissions-list">
           {submissions.map((submission) => (
-            <article className="submission-card" key={submission.id}>
+            <article
+              className="submission-card"
+              key={submission.id}
+            >
               <div className="submission-card-content">
                 <span>SOLUTION #{submission.id}</span>
 
@@ -67,13 +73,17 @@ function ViewSubmissions() {
 
                 <div className="submission-meta">
                   <span>By {submission.solver}</span>
+
                   <span>{submission.tech}</span>
                 </div>
               </div>
 
-              <button className="review-submission-button">
+              <Link
+                to={`/submission-review/${submission.id}`}
+                className="review-submission-button"
+              >
                 Review Solution
-              </button>
+              </Link>
             </article>
           ))}
         </div>
