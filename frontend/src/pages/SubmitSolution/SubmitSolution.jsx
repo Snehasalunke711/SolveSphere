@@ -1,9 +1,50 @@
-import { Link, useParams } from "react-router";
+import { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import Navbar from "../../components/Navbar/Navbar";
+import { submitSolution } from "../../services/submissionService";
 import "./SubmitSolution.css";
 
 function SubmitSolution() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    tech_stack: "",
+    github_link: "",
+    demo_link: "",
+    notes: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setLoading(true);
+
+    try {
+      await submitSolution(id, formData);
+
+      alert("Solution submitted successfully!");
+
+      navigate(`/problem/${id}`);
+    } catch (error) {
+      console.error(error);
+
+      alert("Backend not connected. Running in demo mode.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="submit-solution-page">
@@ -25,11 +66,15 @@ function SubmitSolution() {
       </section>
 
       <section className="submit-content">
-        <form className="solution-form">
+        <form className="solution-form" onSubmit={handleSubmit}>
+
           <div className="solution-form-group">
             <label>Project Title</label>
+
             <input
-              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
               placeholder="Enter your project title"
               required
             />
@@ -37,58 +82,88 @@ function SubmitSolution() {
 
           <div className="solution-form-group">
             <label>Solution Description</label>
+
             <textarea
-              placeholder="Explain your solution and how it solves the problem"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
               rows="6"
+              placeholder="Explain your solution"
               required
-            ></textarea>
+            />
           </div>
 
           <div className="solution-form-group">
             <label>Technology Stack</label>
+
             <input
-              type="text"
-              placeholder="Example: React, FastAPI, Python, PostgreSQL"
+              name="tech_stack"
+              value={formData.tech_stack}
+              onChange={handleChange}
+              placeholder="React, FastAPI, Python..."
               required
             />
           </div>
 
           <div className="solution-form-row">
+
             <div className="solution-form-group">
               <label>GitHub Repository</label>
+
               <input
                 type="url"
-                placeholder="Enter GitHub repository link"
+                name="github_link"
+                value={formData.github_link}
+                onChange={handleChange}
+                placeholder="GitHub Repository URL"
                 required
               />
             </div>
 
             <div className="solution-form-group">
               <label>Demo Link</label>
+
               <input
                 type="url"
-                placeholder="Enter live demo link"
+                name="demo_link"
+                value={formData.demo_link}
+                onChange={handleChange}
+                placeholder="Demo URL"
               />
             </div>
+
           </div>
 
           <div className="solution-form-group">
             <label>Additional Notes</label>
+
             <textarea
-              placeholder="Add implementation details or reviewer notes"
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
               rows="4"
-            ></textarea>
+              placeholder="Any additional notes"
+            />
           </div>
 
           <div className="submit-form-actions">
-            <Link to={`/problem/${id}`} className="cancel-submit-button">
+
+            <Link
+              to={`/problem/${id}`}
+              className="cancel-submit-button"
+            >
               Cancel
             </Link>
 
-            <button type="submit" className="submit-solution-button">
-              Submit Solution
+            <button
+              className="submit-solution-button"
+              disabled={loading}
+            >
+              {loading ? "Submitting..." : "Submit Solution"}
             </button>
+
           </div>
+
         </form>
 
         <aside className="submission-guide">
@@ -106,12 +181,14 @@ function SubmitSolution() {
 
           <div className="submission-note">
             <strong>Tip</strong>
+
             <p>
-              A clear explanation helps problem owners understand the value of
-              your solution.
+              A clear explanation helps reviewers understand your solution.
             </p>
           </div>
+
         </aside>
+
       </section>
     </main>
   );

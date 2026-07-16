@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import Navbar from "../../components/Navbar/Navbar";
 import "./SubmissionReview.css";
+import { getSolutionById, reviewSolution } from "../../services/solutionService";
 
-const submissions = {
+const fallbackSubmissions = {
   1: {
+    id: 1,
     title: "Smart Waste Route Optimizer",
     solver: "Aarav Sharma",
     tech: "React · FastAPI · Python · ML",
@@ -14,7 +16,9 @@ const submissions = {
       "The solution monitors waste collection requirements and uses machine learning to identify efficient collection routes.",
     repository: "GitHub Repository Submitted",
   },
+
   2: {
+    id: 2,
     title: "EcoRoute AI",
     solver: "Meera Patel",
     tech: "React · Flask · Python · OpenStreetMap",
@@ -24,7 +28,9 @@ const submissions = {
       "The platform combines location data with route planning techniques to reduce unnecessary travel.",
     repository: "GitHub Repository Submitted",
   },
+
   3: {
+    id: 3,
     title: "CleanCity Monitor",
     solver: "Rahul Verma",
     tech: "Flutter · Firebase · Python",
@@ -39,8 +45,65 @@ const submissions = {
 function SubmissionReview() {
   const { id } = useParams();
 
-  const submission = submissions[id] || submissions[1];
+  const [submission, setSubmission] = useState(
+    fallbackSubmissions[id] || fallbackSubmissions[1]
+  );
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [reviewStatus, setReviewStatus] = useState("");
+
+  useEffect(() => {
+    const loadSubmission = async () => {
+      try {
+        const data = await getSolutionById(id);
+
+        if (data) {
+          setSubmission(data);
+        }
+      } catch (err) {
+        console.log(err);
+
+        setError(
+          "Backend not connected yet. Showing sample submission."
+        );
+
+        setSubmission(
+          fallbackSubmissions[id] || fallbackSubmissions[1]
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSubmission();
+  }, [id]);
+
+  const handleReview = async (status) => {
+    setReviewStatus("");
+
+    try {
+      await reviewSolution(id, { status });
+
+      setReviewStatus(status);
+    } catch (err) {
+      console.log(err);
+
+      setReviewStatus(status);
+    }
+  };
+
+  if (loading) {
+    return (
+      <main className="submission-review-page">
+        <Navbar />
+
+        <section className="submission-review-header">
+          <h2>Loading submission...</h2>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="submission-review-page">
@@ -61,10 +124,16 @@ function SubmissionReview() {
         </p>
       </section>
 
+      {error && (
+        <p className="error-message">{error}</p>
+      )}
+
       <section className="submission-review-content">
         <div className="review-main-content">
           <div className="review-card">
-            <span className="review-label">SOLUTION OVERVIEW</span>
+            <span className="review-label">
+              SOLUTION OVERVIEW
+            </span>
 
             <h2>About the Solution</h2>
 
@@ -72,7 +141,9 @@ function SubmissionReview() {
           </div>
 
           <div className="review-card">
-            <span className="review-label">SOLUTION APPROACH</span>
+            <span className="review-label">
+              SOLUTION APPROACH
+            </span>
 
             <h2>How does it solve the problem?</h2>
 
@@ -80,7 +151,9 @@ function SubmissionReview() {
           </div>
 
           <div className="review-card">
-            <span className="review-label">TECHNOLOGY STACK</span>
+            <span className="review-label">
+              TECHNOLOGY STACK
+            </span>
 
             <h2>Technologies Used</h2>
 
@@ -96,30 +169,30 @@ function SubmissionReview() {
           <p>{submission.repository}</p>
 
           <button
-  className="approve-button"
-  onClick={() => setReviewStatus("approved")}
->
-  Approve Solution
-</button>
+            className="approve-button"
+            onClick={() => handleReview("approved")}
+          >
+            Approve Solution
+          </button>
 
-<button
-  className="reject-button"
-  onClick={() => setReviewStatus("changes")}
->
-  Request Changes
-</button>
+          <button
+            className="reject-button"
+            onClick={() => handleReview("changes")}
+          >
+            Request Changes
+          </button>
 
-{reviewStatus === "approved" && (
-  <p className="review-status-message">
-    Solution approved successfully.
-  </p>
-)}
+          {reviewStatus === "approved" && (
+            <p className="review-status-message">
+              Solution approved successfully.
+            </p>
+          )}
 
-{reviewStatus === "changes" && (
-  <p className="review-status-message">
-    Change request has been recorded.
-  </p>
-)}
+          {reviewStatus === "changes" && (
+            <p className="review-status-message">
+              Change request has been recorded.
+            </p>
+          )}
         </aside>
       </section>
     </main>

@@ -1,8 +1,10 @@
 import { Link, useParams } from "react-router";
+import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import "./ViewSubmissions.css";
+import { getProblemSubmissions } from "../../services/problemService";
 
-const submissions = [
+const fallbackSubmissions = [
   {
     id: 1,
     title: "Smart Waste Route Optimizer",
@@ -32,62 +34,108 @@ const submissions = [
 function ViewSubmissions() {
   const { id } = useParams();
 
+  const [submissions, setSubmissions] = useState(fallbackSubmissions);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadSubmissions = async () => {
+      try {
+        const data = await getProblemSubmissions(id);
+
+        if (data && data.length > 0) {
+          setSubmissions(data);
+        }
+      } catch (err) {
+        console.log(err);
+
+        setError(
+          "Backend not connected yet. Showing sample submissions."
+        );
+
+        setSubmissions(fallbackSubmissions);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSubmissions();
+  }, [id]);
+
   return (
     <main className="view-submissions-page">
       <Navbar />
 
       <section className="submissions-header">
-        <Link to="/owner-dashboard">← Back to Dashboard</Link>
+        <Link to="/owner-dashboard">
+          ← Back to Dashboard
+        </Link>
 
         <span>PROBLEM SUBMISSIONS</span>
 
         <h1>Review Submitted Solutions</h1>
 
         <p>
-          Explore solutions submitted by problem solvers and discover promising
-          approaches.
+          Explore solutions submitted by problem solvers and discover
+          promising approaches.
         </p>
       </section>
 
-      <section className="submissions-content">
-        <div className="submissions-summary">
-          <span>Problem #{id}</span>
+      {loading ? (
+        <p className="loading-message">
+          Loading submissions...
+        </p>
+      ) : (
+        <section className="submissions-content">
+          {error && (
+            <p className="error-message">
+              {error}
+            </p>
+          )}
 
-          <strong>
-            {submissions.length} submissions available
-          </strong>
-        </div>
+          <div className="submissions-summary">
+            <span>Problem #{id}</span>
 
-        <div className="submissions-list">
-          {submissions.map((submission) => (
-            <article
-              className="submission-card"
-              key={submission.id}
-            >
-              <div className="submission-card-content">
-                <span>SOLUTION #{submission.id}</span>
+            <strong>
+              {submissions.length} submissions available
+            </strong>
+          </div>
 
-                <h2>{submission.title}</h2>
-
-                <p>{submission.description}</p>
-
-                <div className="submission-meta">
-                  <span>By {submission.solver}</span>
-
-                  <span>{submission.tech}</span>
-                </div>
-              </div>
-
-              <Link
-                to={`/submission-review/${submission.id}`}
-                className="review-submission-button"
+          <div className="submissions-list">
+            {submissions.map((submission) => (
+              <article
+                className="submission-card"
+                key={submission.id}
               >
-                Review Solution
-              </Link>
-            </article>
-          ))}
-        </div>
-      </section>
+                <div className="submission-card-content">
+                  <span>
+                    SOLUTION #{submission.id}
+                  </span>
+
+                  <h2>{submission.title}</h2>
+
+                  <p>{submission.description}</p>
+
+                  <div className="submission-meta">
+                    <span>
+                      By {submission.solver}
+                    </span>
+
+                    <span>{submission.tech}</span>
+                  </div>
+                </div>
+
+                <Link
+                  to={`/submission-review/${submission.id}`}
+                  className="review-submission-button"
+                >
+                  Review Solution
+                </Link>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

@@ -406,60 +406,44 @@
    RESPONSIVE DESIGN
    ========================= */
 
-@media (max-width: 900px) {
+@media (max-width: 992px) {
+
   .hero-title {
     font-size: 48px;
   }
 
-  .steps-container {
-    grid-template-columns: 1fr;
+  .hero-description {
+    font-size: 17px;
   }
 
-  .roles-container {
+  .steps-container,
+  .roles-container,
+  .ai-container {
     grid-template-columns: 1fr;
   }
 
   .ai-container {
-    grid-template-columns: 1fr;
-    gap: 50px;
+    gap: 40px;
   }
 
   .ai-content {
     text-align: center;
   }
 
-  .ai-content h2 {
-    font-size: 38px;
-  }
-
   .ai-features {
     text-align: left;
   }
+
+  .section-heading h2,
+  .ai-content h2,
+  .cta-content h2 {
+    font-size: 36px;
+  }
 }
 
-@media (max-width: 600px) {
-  .hero-section {
-    min-height: auto;
-    padding: 90px 6%;
-  }
+@media (max-width: 768px) {
 
-  .hero-title {
-    font-size: 38px;
-  }
-
-  .hero-description {
-    font-size: 16px;
-  }
-
-  .hero-buttons {
-    flex-direction: column;
-  }
-
-  .primary-button,
-  .secondary-button {
-    width: 100%;
-  }
-
+  .hero-section,
   .how-it-works,
   .roles-section,
   .ai-section,
@@ -467,12 +451,36 @@
     padding: 70px 6%;
   }
 
+  .hero-title {
+    font-size: 38px;
+    line-height: 1.2;
+  }
+
+  .hero-description {
+    font-size: 16px;
+    margin-bottom: 28px;
+  }
+
+  .hero-buttons,
+  .cta-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .cta-primary,
+  .cta-secondary {
+    width: 100%;
+  }
+
   .section-heading {
     margin-bottom: 40px;
   }
 
   .section-heading h2 {
-    font-size: 32px;
+    font-size: 30px;
   }
 
   .section-heading p {
@@ -483,30 +491,89 @@
     padding: 28px;
   }
 
+  .step-card h3 {
+    font-size: 20px;
+  }
+
   .role-card {
     padding: 30px;
   }
 
   .role-card h3 {
-    font-size: 26px;
+    font-size: 24px;
+  }
+
+  .role-card ul {
+    margin: 20px 0;
   }
 
   .ai-content h2 {
-    font-size: 32px;
+    font-size: 30px;
   }
 
   .ai-preview {
-    padding: 20px;
+    padding: 22px;
   }
 
   .cta-content h2 {
-    font-size: 34px;
+    font-size: 30px;
   }
 
-  .cta-buttons {
-    flex-direction: column;
+  .cta-content p {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .hero-section {
+    padding: 60px 5%;
   }
 
+  .hero-title {
+    font-size: 30px;
+  }
+
+  .hero-description {
+    font-size: 15px;
+  }
+
+  .section-heading h2 {
+    font-size: 26px;
+  }
+
+  .section-heading p {
+    font-size: 14px;
+  }
+
+  .step-card,
+  .role-card,
+  .ai-preview {
+    padding: 22px;
+  }
+
+  .step-number {
+    width: 46px;
+    height: 46px;
+    font-size: 14px;
+  }
+
+  .role-card h3,
+  .ai-content h2,
+  .cta-content h2 {
+    font-size: 24px;
+  }
+
+  .role-card li,
+  .step-card p,
+  .ai-feature p,
+  .cta-content p {
+    font-size: 14px;
+  }
+
+  .role-button,
+  .primary-button,
+  .secondary-button,
   .cta-primary,
   .cta-secondary {
     width: 100%;

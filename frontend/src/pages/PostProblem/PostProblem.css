@@ -113,21 +113,111 @@
   background: #2563eb;
 }
 
-@media (max-width: 600px) {
+/* =========================
+   RESPONSIVE DESIGN
+   ========================= */
+
+@media (max-width: 992px) {
+
+  .post-problem-header {
+    padding: 60px 6% 35px;
+  }
+
+  .post-problem-content {
+    padding: 10px 6% 80px;
+  }
+
   .post-problem-header h1 {
-    font-size: 36px;
+    font-size: 40px;
   }
 
   .post-problem-form {
-    padding: 25px 20px;
+    padding: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .post-problem-header {
+    padding: 50px 5% 30px;
+  }
+
+  .post-problem-content {
+    padding: 10px 5% 70px;
+  }
+
+  .post-problem-header h1 {
+    font-size: 34px;
+  }
+
+  .post-problem-header p {
+    font-size: 15px;
+  }
+
+  .post-problem-form {
+    padding: 28px;
+  }
+
+  .problem-form-group input,
+  .problem-form-group select,
+  .problem-form-group textarea {
+    font-size: 14px;
+  }
+
+  .post-problem-actions {
+    justify-content: stretch;
+  }
+
+  .problem-cancel-button,
+  .problem-submit-button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .post-problem-header {
+    padding: 45px 5% 25px;
+  }
+
+  .post-problem-header h1 {
+    font-size: 28px;
+    line-height: 1.3;
+  }
+
+  .post-problem-header p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .post-problem-form {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .problem-form-group {
+    margin-bottom: 20px;
+  }
+
+  .problem-form-group label {
+    font-size: 13px;
+  }
+
+  .problem-form-group input,
+  .problem-form-group select,
+  .problem-form-group textarea {
+    padding: 12px;
+    font-size: 14px;
   }
 
   .post-problem-actions {
     flex-direction: column-reverse;
+    gap: 12px;
   }
 
   .problem-cancel-button,
   .problem-submit-button {
     width: 100%;
+    padding: 13px;
   }
 }

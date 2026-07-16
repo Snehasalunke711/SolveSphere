@@ -156,16 +156,122 @@
   background: #dbeafe;
 }
 
-@media (max-width: 800px) {
-  .problem-details-header h1 {
-    font-size: 36px;
+/* =========================
+   RESPONSIVE DESIGN
+   ========================= */
+
+@media (max-width: 992px) {
+
+  .problem-details-header {
+    padding: 60px 6% 45px;
   }
 
   .problem-details-content {
+    padding: 10px 6% 80px;
     grid-template-columns: 1fr;
+    gap: 25px;
   }
 
   .problem-action-card {
     position: static;
+  }
+
+  .problem-details-header h1 {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .problem-details-header {
+    padding: 50px 5% 35px;
+  }
+
+  .problem-details-header h1 {
+    font-size: 32px;
+  }
+
+  .problem-details-header > p {
+    font-size: 15px;
+  }
+
+  .problem-details-content {
+    padding: 10px 5% 70px;
+  }
+
+  .problem-meta {
+    flex-wrap: wrap;
+  }
+
+  .details-card,
+  .problem-action-card {
+    padding: 28px;
+  }
+
+  .details-card h2,
+  .problem-action-card h3 {
+    font-size: 22px;
+  }
+
+  .details-card p,
+  .details-card li,
+  .problem-action-card p {
+    font-size: 14px;
+  }
+
+  .ai-guide-button,
+  .start-solution-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .problem-details-header {
+    padding: 45px 5% 30px;
+  }
+
+  .back-link {
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+
+  .problem-details-header h1 {
+    font-size: 26px;
+    line-height: 1.3;
+  }
+
+  .problem-details-header > p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .problem-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .details-card,
+  .problem-action-card {
+    padding: 22px;
+  }
+
+  .details-card h2,
+  .problem-action-card h3 {
+    font-size: 20px;
+  }
+
+  .details-card p,
+  .details-card li,
+  .problem-action-card p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .ai-guide-button,
+  .start-solution-button {
+    padding: 13px;
+    font-size: 14px;
   }
 }
