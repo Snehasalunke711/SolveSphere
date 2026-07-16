@@ -1,75 +1,48 @@
 import { Link, useParams } from "react-router";
+import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
+import { getProblemById } from "../../services/problemService";
 import "./ProblemDetails.css";
-
-const problems = {
-  1: {
-    category: "SMART CITY",
-    difficulty: "Intermediate",
-    title: "Improve Urban Waste Collection Efficiency",
-    description:
-      "Urban waste collection systems often follow fixed schedules and routes, leading to inefficient collection, overflowing bins, and unnecessary fuel consumption.",
-    objective:
-      "Build a smarter solution that can monitor waste collection needs and help optimize collection routes.",
-  },
-
-  2: {
-    category: "HEALTHCARE",
-    difficulty: "Advanced",
-    title: "Improve Emergency Resource Discovery",
-    description:
-      "During emergencies, users may struggle to quickly discover nearby hospitals, ambulances, police stations, and other critical resources.",
-    objective:
-      "Design a platform that improves emergency resource discovery using location-based information.",
-  },
-
-  3: {
-    category: "EDUCATION",
-    difficulty: "Beginner",
-    title: "Personalized Learning Resource Discovery",
-    description:
-      "Students often struggle to discover learning resources that match their individual needs, interests, and current skill levels.",
-    objective:
-      "Create a solution that recommends useful learning resources based on student needs and learning preferences.",
-  },
-
-  4: {
-    category: "ENVIRONMENT",
-    difficulty: "Intermediate",
-    title: "Monitor Urban Air Quality",
-    description:
-      "Urban areas experience changing air quality levels, but citizens may not have easy access to understandable pollution information.",
-    objective:
-      "Develop a system that analyzes air quality information and helps identify pollution patterns.",
-  },
-
-  5: {
-    category: "AGRICULTURE",
-    difficulty: "Advanced",
-    title: "Smart Crop Monitoring",
-    description:
-      "Farmers may struggle to identify early signs of crop stress, disease, and environmental changes affecting crop health.",
-    objective:
-      "Build a smart monitoring solution that helps farmers understand crop conditions and identify early signs of crop stress.",
-  },
-
-  6: {
-    category: "TRANSPORT",
-    difficulty: "Intermediate",
-    title: "Reduce Traffic Congestion",
-    description:
-      "Growing urban traffic creates longer travel times, increased fuel consumption, and inefficient road usage.",
-    objective:
-      "Build a data-driven solution that analyzes traffic patterns and helps improve urban mobility.",
-  },
-};
 
 function ProblemDetails() {
   const { id } = useParams();
 
-  const problem = problems[id];
+  const [problem, setProblem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  if (!problem) {
+  useEffect(() => {
+    const loadProblem = async () => {
+      try {
+        setLoading(true);
+
+        const data = await getProblemById(id);
+
+        setProblem(data);
+        setError("");
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load problem.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProblem();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <main className="problem-details-page">
+        <Navbar />
+        <section className="problem-details-header">
+          <h2>Loading problem...</h2>
+        </section>
+      </main>
+    );
+  }
+
+  if (error || !problem) {
     return (
       <main className="problem-details-page">
         <Navbar />
@@ -81,9 +54,7 @@ function ProblemDetails() {
 
           <h1>Problem Not Found</h1>
 
-          <p>
-            The problem you are looking for does not exist.
-          </p>
+          <p>{error || "The requested problem does not exist."}</p>
         </section>
       </main>
     );
@@ -128,21 +99,10 @@ function ProblemDetails() {
             <h2>What should the solution achieve?</h2>
 
             <ul>
-              <li>
-                Understand the core problem and user requirements.
-              </li>
-
-              <li>
-                Design a practical and scalable solution approach.
-              </li>
-
-              <li>
-                Select suitable technologies and development tools.
-              </li>
-
-              <li>
-                Build and explain a working solution or prototype.
-              </li>
+              <li>Understand the core problem and user requirements.</li>
+              <li>Design a practical and scalable solution approach.</li>
+              <li>Select suitable technologies and development tools.</li>
+              <li>Build and explain a working solution or prototype.</li>
             </ul>
           </div>
         </div>

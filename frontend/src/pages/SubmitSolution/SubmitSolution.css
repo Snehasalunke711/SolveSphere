@@ -182,20 +182,129 @@
   line-height: 1.6;
 }
 
-@media (max-width: 800px) {
-  .submit-header h1 {
-    font-size: 36px;
+/* =========================
+   RESPONSIVE DESIGN
+   ========================= */
+
+@media (max-width: 992px) {
+
+  .submit-header {
+    padding: 60px 6% 40px;
   }
 
   .submit-content {
+    padding: 10px 6% 80px;
     grid-template-columns: 1fr;
-  }
-
-  .solution-form-row {
-    grid-template-columns: 1fr;
+    gap: 25px;
   }
 
   .submission-guide {
     position: static;
+  }
+
+  .submit-header h1 {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .submit-header {
+    padding: 50px 5% 35px;
+  }
+
+  .submit-content {
+    padding: 10px 5% 70px;
+  }
+
+  .submit-header h1 {
+    font-size: 34px;
+  }
+
+  .submit-header p {
+    font-size: 15px;
+  }
+
+  .solution-form,
+  .submission-guide {
+    padding: 28px;
+  }
+
+  .solution-form-row {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .submit-form-actions {
+    justify-content: stretch;
+  }
+
+  .cancel-submit-button,
+  .submit-solution-button {
+    flex: 1;
+    text-align: center;
+  }
+
+  .submission-guide h2 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .submit-header {
+    padding: 45px 5% 30px;
+  }
+
+  .submit-back-link {
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+
+  .submit-header h1 {
+    font-size: 28px;
+    line-height: 1.3;
+  }
+
+  .submit-header p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .solution-form,
+  .submission-guide {
+    padding: 22px;
+    border-radius: 14px;
+  }
+
+  .solution-form-group label {
+    font-size: 13px;
+  }
+
+  .solution-form-group input,
+  .solution-form-group textarea {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .submit-form-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .cancel-submit-button,
+  .submit-solution-button {
+    width: 100%;
+    padding: 13px;
+    box-sizing: border-box;
+  }
+
+  .submission-guide h2 {
+    font-size: 20px;
+  }
+
+  .submission-guide li,
+  .submission-note p {
+    font-size: 14px;
   }
 }
