@@ -1,8 +1,10 @@
 import { Link, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
-import "./ViewSubmissions.css";
+import Loading from "../../components/Loading/Loading";
+import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import { getProblemSubmissions } from "../../services/problemService";
+import "./ViewSubmissions.css";
 
 const fallbackSubmissions = [
   {
@@ -45,9 +47,13 @@ function ViewSubmissions() {
 
         if (data && data.length > 0) {
           setSubmissions(data);
+        } else {
+          setSubmissions([]);
         }
+
+        setError("");
       } catch (err) {
-        console.log(err);
+        console.error(err);
 
         setError(
           "Backend not connected yet. Showing sample submissions."
@@ -82,16 +88,10 @@ function ViewSubmissions() {
       </section>
 
       {loading ? (
-        <p className="loading-message">
-          Loading submissions...
-        </p>
+        <Loading />
       ) : (
         <section className="submissions-content">
-          {error && (
-            <p className="error-message">
-              {error}
-            </p>
-          )}
+          {error && <ErrorMessage message={error} />}
 
           <div className="submissions-summary">
             <span>Problem #{id}</span>
@@ -101,39 +101,49 @@ function ViewSubmissions() {
             </strong>
           </div>
 
-          <div className="submissions-list">
-            {submissions.map((submission) => (
-              <article
-                className="submission-card"
-                key={submission.id}
-              >
-                <div className="submission-card-content">
-                  <span>
-                    SOLUTION #{submission.id}
-                  </span>
+          {submissions.length === 0 ? (
+            <div className="empty-state">
+              <h2>No Submissions Yet</h2>
 
-                  <h2>{submission.title}</h2>
-
-                  <p>{submission.description}</p>
-
-                  <div className="submission-meta">
+              <p>
+                No one has submitted a solution for this problem yet.
+              </p>
+            </div>
+          ) : (
+            <div className="submissions-list">
+              {submissions.map((submission) => (
+                <article
+                  className="submission-card"
+                  key={submission.id}
+                >
+                  <div className="submission-card-content">
                     <span>
-                      By {submission.solver}
+                      SOLUTION #{submission.id}
                     </span>
 
-                    <span>{submission.tech}</span>
-                  </div>
-                </div>
+                    <h2>{submission.title}</h2>
 
-                <Link
-                  to={`/submission-review/${submission.id}`}
-                  className="review-submission-button"
-                >
-                  Review Solution
-                </Link>
-              </article>
-            ))}
-          </div>
+                    <p>{submission.description}</p>
+
+                    <div className="submission-meta">
+                      <span>
+                        By {submission.solver}
+                      </span>
+
+                      <span>{submission.tech}</span>
+                    </div>
+                  </div>
+
+                  <Link
+                    to={`/submission-review/${submission.id}`}
+                    className="review-submission-button"
+                  >
+                    Review Solution
+                  </Link>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
       )}
     </main>
