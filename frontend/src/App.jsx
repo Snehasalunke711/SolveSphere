@@ -13,6 +13,7 @@ import OwnerDashboard from "./pages/OwnerDashboard/OwnerDashboard";
 import ViewSubmissions from "./pages/ViewSubmissions/ViewSubmissions";
 import PostProblem from "./pages/PostProblem/PostProblem";
 import SubmissionReview from "./pages/SubmissionReview/SubmissionReview";
+import NotFound from "./pages/NotFound/NotFound";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
       <Route path="/owner-dashboard" element={<OwnerDashboard />} />
       <Route path="/submissions/:id" element={<ViewSubmissions />} />
       <Route path="/post-problem" element={<PostProblem />} />
+      <Route path="*" element={<NotFound />} />
       <Route
   path="/submission-review/:id"
   element={<SubmissionReview />}

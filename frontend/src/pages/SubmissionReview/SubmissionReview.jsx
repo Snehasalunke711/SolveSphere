@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import Navbar from "../../components/Navbar/Navbar";
+import Loading from "../../components/Loading/Loading";
+import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
+import {
+  getSolutionById,
+  reviewSolution,
+} from "../../services/solutionService";
 import "./SubmissionReview.css";
-import { getSolutionById, reviewSolution } from "../../services/solutionService";
 
 const fallbackSubmissions = {
   1: {
@@ -61,8 +66,10 @@ function SubmissionReview() {
         if (data) {
           setSubmission(data);
         }
+
+        setError("");
       } catch (err) {
-        console.log(err);
+        console.error(err);
 
         setError(
           "Backend not connected yet. Showing sample submission."
@@ -87,8 +94,9 @@ function SubmissionReview() {
 
       setReviewStatus(status);
     } catch (err) {
-      console.log(err);
+      console.error(err);
 
+      // Demo mode
       setReviewStatus(status);
     }
   };
@@ -97,10 +105,7 @@ function SubmissionReview() {
     return (
       <main className="submission-review-page">
         <Navbar />
-
-        <section className="submission-review-header">
-          <h2>Loading submission...</h2>
-        </section>
+        <Loading />
       </main>
     );
   }
@@ -110,7 +115,10 @@ function SubmissionReview() {
       <Navbar />
 
       <section className="submission-review-header">
-        <Link to="/owner-dashboard" className="review-back-link">
+        <Link
+          to="/owner-dashboard"
+          className="review-back-link"
+        >
           ← Back to Dashboard
         </Link>
 
@@ -119,14 +127,12 @@ function SubmissionReview() {
         <h1>{submission.title}</h1>
 
         <p>
-          Review the submitted solution, technical approach, and project
-          information.
+          Review the submitted solution, technical approach,
+          and project information.
         </p>
       </section>
 
-      {error && (
-        <p className="error-message">{error}</p>
-      )}
+      {error && <ErrorMessage message={error} />}
 
       <section className="submission-review-content">
         <div className="review-main-content">
@@ -184,13 +190,13 @@ function SubmissionReview() {
 
           {reviewStatus === "approved" && (
             <p className="review-status-message">
-              Solution approved successfully.
+              ✅ Solution approved successfully.
             </p>
           )}
 
           {reviewStatus === "changes" && (
             <p className="review-status-message">
-              Change request has been recorded.
+              ✏️ Change request has been recorded.
             </p>
           )}
         </aside>

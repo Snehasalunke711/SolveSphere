@@ -1,6 +1,8 @@
 import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
+import Loading from "../../components/Loading/Loading";
+import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import { getProblems } from "../../services/problemService";
 import "./ExploreProblems.css";
 
@@ -18,6 +20,7 @@ function ExploreProblems() {
     "ENVIRONMENT",
     "AGRICULTURE",
     "TRANSPORT",
+     
   ];
 
   useEffect(() => {
@@ -79,11 +82,19 @@ function ExploreProblems() {
           ))}
         </div>
 
-        {loading && <p>Loading problems...</p>}
+        {loading ? (
+          <Loading />
+        ) : error ? (
+          <ErrorMessage message={error} />
+        ) : filteredProblems.length === 0 ? (
+          <div className="empty-state">
+            <h2>No Problems Found</h2>
 
-        {error && <p>{error}</p>}
-
-        {!loading && !error && (
+            <p>
+              There are currently no problems available in this category.
+            </p>
+          </div>
+        ) : (
           <div className="problems-grid">
             {filteredProblems.map((problem) => (
               <article

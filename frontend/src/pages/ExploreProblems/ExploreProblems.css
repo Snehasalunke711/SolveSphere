@@ -259,3 +259,21 @@
     color: #fff;
   }
 }
+.empty-state {
+  padding: 80px 20px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 16px;
+}
+
+.empty-state h2 {
+  margin-bottom: 12px;
+  color: #1e3a5f;
+  font-size: 28px;
+}
+
+.empty-state p {
+  color: #64748b;
+  font-size: 16px;
+}

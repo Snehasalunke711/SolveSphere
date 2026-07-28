@@ -89,3 +89,24 @@ export const createProblem = async (problemData) => {
 export const getProblemSubmissions = async (problemId) => {
   return apiRequest(`/api/problems/${problemId}/submissions`);
 };
+
+/* ============================
+   OWNER DASHBOARD
+============================ */
+
+export const getOwnerProblems = async () => {
+  try {
+    return await apiRequest("/api/owner/problems");
+  } catch (error) {
+    console.warn(
+      "Owner dashboard API unavailable. Using fallback data.",
+      error
+    );
+
+    return fallbackProblems.slice(0, 3).map((problem, index) => ({
+      ...problem,
+      submissions: [12, 8, 5][index],
+      status: ["Active", "Active", "Reviewing"][index],
+    }));
+  }
+};

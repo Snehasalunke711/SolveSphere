@@ -255,3 +255,20 @@
     font-size: 14px;
   }
 }
+.empty-state {
+  padding: 60px 30px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.empty-state h2 {
+  margin-bottom: 12px;
+  color: #0f172a;
+}
+
+.empty-state p {
+  color: #64748b;
+  line-height: 1.6;
+}
