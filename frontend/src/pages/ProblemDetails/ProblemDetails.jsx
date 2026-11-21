@@ -86,9 +86,7 @@ function ProblemDetails() {
               PROBLEM OBJECTIVE
             </span>
 
-            <h2>What needs to be solved?</h2>
-
-            <p>{problem.objective}</p>
+            <h2>{problem.objective}</h2>
           </div>
 
           <div className="details-card">

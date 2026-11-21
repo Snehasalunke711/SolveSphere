@@ -1,7 +1,50 @@
+
 import "../Login/Login.css";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 function Register() {
+  const navigate = useNavigate();
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+
+    const name = e.target.name.value;
+    const email = e.target.email.value;
+    const role = e.target.role.value;
+    const password = e.target.password.value;
+
+    const users = JSON.parse(
+      localStorage.getItem("solvesphere_users") || "[]"
+    );
+
+    const existingUser = users.find(
+      (user) => user.email === email
+    );
+
+    if (existingUser) {
+      alert("An account with this email already exists.");
+      return;
+    }
+
+    const newUser = {
+      name,
+      email,
+      role,
+      password,
+    };
+
+    users.push(newUser);
+
+    localStorage.setItem(
+      "solvesphere_users",
+      JSON.stringify(users)
+    );
+
+    alert("Account created successfully! Please sign in.");
+
+    navigate("/login");
+  };
+
   return (
     <div className="auth-page">
       <div className="auth-container">
@@ -10,15 +53,17 @@ function Register() {
         </div>
 
         <h1>Create your account</h1>
+
         <p className="auth-description">
           Join SolveSphere and turn real-world problems into meaningful solutions.
         </p>
 
-        <form className="auth-form">
+        <form className="auth-form" onSubmit={handleRegister}>
           <div className="form-group">
             <label>Full Name</label>
             <input
               type="text"
+              name="name"
               placeholder="Enter your full name"
               required
             />
@@ -28,6 +73,7 @@ function Register() {
             <label>Email Address</label>
             <input
               type="email"
+              name="email"
               placeholder="Enter your email"
               required
             />
@@ -35,7 +81,7 @@ function Register() {
 
           <div className="form-group">
             <label>I want to join as</label>
-            <select required defaultValue="">
+            <select name="role" required defaultValue="">
               <option value="" disabled>
                 Select your role
               </option>
@@ -48,6 +94,7 @@ function Register() {
             <label>Password</label>
             <input
               type="password"
+              name="password"
               placeholder="Create a password"
               required
             />
@@ -59,8 +106,8 @@ function Register() {
         </form>
 
         <p className="auth-switch">
-  Already have an account? <Link to="/login">Sign in</Link>
-</p>
+          Already have an account? <Link to="/login">Sign in</Link>
+        </p>
       </div>
     </div>
   );

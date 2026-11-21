@@ -30,7 +30,7 @@ function Landing() {
             </button>
 
             <button
-              className="secondary-button"
+              className="primary-button"
               onClick={() => navigate("/post-problem")}
             >
               Post a Problem
@@ -246,7 +246,7 @@ function Landing() {
             </button>
 
             <button
-              className="cta-secondary"
+              className="cta-primary"
               onClick={() => navigate("/post-problem")}
             >
               Post a Problem

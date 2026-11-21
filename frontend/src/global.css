@@ -1,0 +1,32 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+
+/* Apply the same elegant font everywhere */
+*,
+*::before,
+*::after {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Main website */
+html,
+body,
+#root {
+  font-family: 'Playfair Display', serif;
+}
+
+/* All headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Playfair Display', serif;
+}
+
+/* SolveSphere logo */
+.navbar-logo {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+}
