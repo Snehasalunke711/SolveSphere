@@ -1,46 +1,47 @@
-
 import "./Login.css";
 import { Link, useNavigate } from "react-router";
+import { useAuth } from "../../context/AuthContext";
+import { loginUser } from "../../services/authService";
+import { useState } from "react";
 
 function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     const email = e.target.email.value;
     const password = e.target.password.value;
 
-    const users = JSON.parse(
-      localStorage.getItem("solvesphere_users") || "[]"
-    );
+    try {
+      setLoading(true);
 
-    const user = users.find(
-      (u) => u.email === email && u.password === password
-    );
+      const response = await loginUser({
+        email,
+        password,
+      });
 
-    if (!user) {
-      alert("Invalid email or password!");
-      return;
-    }
+      // Save user details
+      const currentUser = {
+        id: response.id,
+        name: response.name,
+        email: response.email,
+      };
 
-    const currentUser = {
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    };
+      // Save JWT and update AuthContext
+      login(currentUser, response.token);
 
-    localStorage.setItem(
-      "solvesphere_current_user",
-      JSON.stringify(currentUser)
-    );
+      alert("Login successful!");
 
-    alert("Login successful!");
-
-    if (user.role === "solver") {
+      // Role is not provided by backend yet
       navigate("/dashboard");
-    } else if (user.role === "owner") {
-      navigate("/owner-dashboard");
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert(error.message || "Login failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,8 +87,12 @@ function Login() {
             <a href="#">Forgot password?</a>
           </div>
 
-          <button type="submit" className="auth-button">
-            Sign In
+          <button
+            type="submit"
+            className="auth-button"
+            disabled={loading}
+          >
+            {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
 

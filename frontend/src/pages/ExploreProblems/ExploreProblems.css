@@ -277,3 +277,50 @@
   color: #64748b;
   font-size: 16px;
 }
+/* Search and sorting tools */
+.explore-tools {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.problem-search,
+.problem-sort {
+  padding: 13px 16px;
+  border: 1px solid #ddd6e8;
+  border-radius: 10px;
+  font: inherit;
+  outline: none;
+  background: #fff;
+  color: #1a1035;
+}
+
+.problem-search {
+  flex: 1;
+  min-width: 0;
+}
+
+.problem-search:focus,
+.problem-sort:focus {
+  border-color: #6c4ff6;
+  box-shadow: 0 0 0 3px rgba(108, 79, 246, 0.1);
+}
+
+.problem-results-count {
+  margin-bottom: 18px;
+  color: #777;
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .explore-tools {
+    flex-direction: column;
+  }
+
+  .problem-search,
+  .problem-sort {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

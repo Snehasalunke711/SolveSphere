@@ -1,3 +1,4 @@
+
 import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
@@ -9,6 +10,8 @@ import "./ExploreProblems.css";
 function ExploreProblems() {
   const [problems, setProblems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("ALL");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("default");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -20,21 +23,17 @@ function ExploreProblems() {
     "ENVIRONMENT",
     "AGRICULTURE",
     "TRANSPORT",
-     
   ];
 
   useEffect(() => {
     const loadProblems = async () => {
       try {
         setLoading(true);
-
         const data = await getProblems();
-
-        setProblems(data);
+        setProblems(Array.isArray(data) ? data : []);
         setError("");
       } catch (err) {
         console.error("Failed to load problems:", err);
-
         setError("Unable to load problems. Please try again.");
       } finally {
         setLoading(false);
@@ -44,13 +43,48 @@ function ExploreProblems() {
     loadProblems();
   }, []);
 
-  const filteredProblems =
+  // Category filter
+  let filteredProblems =
     selectedCategory === "ALL"
-      ? problems
+      ? [...problems]
       : problems.filter(
           (problem) =>
             problem.category?.toUpperCase() === selectedCategory
         );
+
+  // Search filter
+  filteredProblems = filteredProblems.filter((problem) => {
+    const search = searchTerm.toLowerCase().trim();
+
+    return (
+      problem.title?.toLowerCase().includes(search) ||
+      problem.description?.toLowerCase().includes(search) ||
+      problem.objective?.toLowerCase().includes(search)
+    );
+  });
+
+  // Sorting
+  if (sortBy === "az") {
+    filteredProblems.sort((a, b) =>
+      (a.title || "").localeCompare(b.title || "")
+    );
+  } else if (sortBy === "za") {
+    filteredProblems.sort((a, b) =>
+      (b.title || "").localeCompare(a.title || "")
+    );
+  } else if (sortBy === "newest") {
+    filteredProblems.sort(
+      (a, b) =>
+        new Date(b.createdAt || b.createdDate || 0) -
+        new Date(a.createdAt || a.createdDate || 0)
+    );
+  } else if (sortBy === "oldest") {
+    filteredProblems.sort(
+      (a, b) =>
+        new Date(a.createdAt || a.createdDate || 0) -
+        new Date(b.createdAt || b.createdDate || 0)
+    );
+  }
 
   return (
     <main className="explore-page">
@@ -68,6 +102,30 @@ function ExploreProblems() {
       </section>
 
       <section className="explore-content">
+        {/* Search and Sort */}
+        <div className="explore-tools">
+          <input
+            type="text"
+            className="problem-search"
+            placeholder="Search problems by title or description..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          <select
+            className="problem-sort"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="default">Default Order</option>
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="az">Title (A–Z)</option>
+            <option value="za">Title (Z–A)</option>
+          </select>
+        </div>
+
+        {/* Category Filters */}
         <div className="problem-filters">
           {categories.map((category) => (
             <button
@@ -89,38 +147,44 @@ function ExploreProblems() {
         ) : filteredProblems.length === 0 ? (
           <div className="empty-state">
             <h2>No Problems Found</h2>
-
             <p>
-              There are currently no problems available in this category.
+              Try changing your search or selecting a different category.
             </p>
           </div>
         ) : (
-          <div className="problems-grid">
-            {filteredProblems.map((problem) => (
-              <article
-                className="explore-problem-card"
-                key={problem.id}
-              >
-                <div className="problem-card-top">
-                  <span className="explore-category">
-                    {problem.category}
-                  </span>
+          <>
+            <p className="problem-results-count">
+              Showing {filteredProblems.length}{" "}
+              {filteredProblems.length === 1 ? "problem" : "problems"}
+            </p>
 
-                  <span className="difficulty">
-                    {problem.difficulty}
-                  </span>
-                </div>
+            <div className="problems-grid">
+              {filteredProblems.map((problem) => (
+                <article
+                  className="explore-problem-card"
+                  key={problem.id}
+                >
+                  <div className="problem-card-top">
+                    <span className="explore-category">
+                      {problem.category}
+                    </span>
 
-                <h2>{problem.title}</h2>
+                    <span className="difficulty">
+                      {problem.difficulty || "Not specified"}
+                    </span>
+                  </div>
 
-                <p>{problem.description}</p>
+                  <h2>{problem.title}</h2>
 
-                <Link to={`/problem/${problem.id}`}>
-                  View Problem
-                </Link>
-              </article>
-            ))}
-          </div>
+                  <p>{problem.description}</p>
+
+                  <Link to={`/problem/${problem.id}`}>
+                    View Problem
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </>
         )}
       </section>
     </main>

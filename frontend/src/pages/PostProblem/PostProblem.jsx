@@ -10,6 +10,7 @@ function PostProblem() {
   const [formData, setFormData] = useState({
     title: "",
     category: "",
+    difficulty: "",
     description: "",
     requirements: "",
     outcome: "",
@@ -95,6 +96,24 @@ function PostProblem() {
               <option value="Environment">Environment</option>
               <option value="Agriculture">Agriculture</option>
               <option value="Technology">Technology</option>
+            </select>
+          </div>
+
+          {/* Difficulty Dropdown */}
+          <div className="problem-form-group">
+            <label htmlFor="difficulty">Difficulty</label>
+
+            <select
+              id="difficulty"
+              name="difficulty"
+              value={formData.difficulty}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Difficulty</option>
+              <option value="EASY">Easy</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HARD">Hard</option>
             </select>
           </div>
 

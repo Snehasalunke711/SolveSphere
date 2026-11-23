@@ -1,10 +1,21 @@
-
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import "./Navbar.css";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const dashboardPath =
+    user?.role === "owner" ? "/owner-dashboard" : "/dashboard";
+
+  const handleLogout = () => {
+    logout();
+    setMenuOpen(false);
+    navigate("/");
+  };
 
   return (
     <nav className="navbar">
@@ -25,39 +36,59 @@ function Navbar() {
 
       <div className={`navbar-menu ${menuOpen ? "active" : ""}`}>
         <div className="navbar-links">
-          <Link
-            to="/explore"
-            onClick={() => setMenuOpen(false)}
-          >
+          <Link to="/explore" onClick={() => setMenuOpen(false)}>
             Explore Problems
           </Link>
 
-          <a
-            href="/#how-it-works"
-            onClick={() => setMenuOpen(false)}
-          >
-            How It Works
-          </a>
+          {!user && (
+            <a
+              href="/#how-it-works"
+              onClick={() => setMenuOpen(false)}
+            >
+              How It Works
+            </a>
+          )}
+
+          {user && (
+            <Link to={dashboardPath} onClick={() => setMenuOpen(false)}>
+              Dashboard
+            </Link>
+          )}
+
+          {user && (
+            <Link to="/profile" onClick={() => setMenuOpen(false)}>
+              Profile
+            </Link>
+          )}
         </div>
 
         <div className="navbar-actions">
-          <Link
-            to="/login"
-            onClick={() => setMenuOpen(false)}
-          >
-            <button className="login-button">
-              Login
-            </button>
-          </Link>
+          {!user ? (
+            <>
+              <Link
+                to="/login"
+                className="login-button"
+                onClick={() => setMenuOpen(false)}
+              >
+                Login
+              </Link>
 
-          <Link
-            to="/register"
-            onClick={() => setMenuOpen(false)}
-          >
-            <button className="signup-button">
-              Sign Up
+              <Link
+                to="/register"
+                className="signup-button"
+                onClick={() => setMenuOpen(false)}
+              >
+                Sign Up
+              </Link>
+            </>
+          ) : (
+            <button
+              className="login-button"
+              onClick={handleLogout}
+            >
+              Logout
             </button>
-          </Link>
+          )}
         </div>
       </div>
     </nav>
