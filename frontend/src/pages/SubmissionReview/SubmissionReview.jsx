@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import Navbar from "../../components/Navbar/Navbar";
@@ -9,75 +10,23 @@ import {
 } from "../../services/solutionService";
 import "./SubmissionReview.css";
 
-const fallbackSubmissions = {
-  1: {
-    id: 1,
-    title: "Smart Waste Route Optimizer",
-    solver: "Aarav Sharma",
-    tech: "React · FastAPI · Python · ML",
-    description:
-      "A data-driven waste monitoring and route optimization platform designed to improve urban waste collection efficiency.",
-    approach:
-      "The solution monitors waste collection requirements and uses machine learning to identify efficient collection routes.",
-    repository: "GitHub Repository Submitted",
-  },
-
-  2: {
-    id: 2,
-    title: "EcoRoute AI",
-    solver: "Meera Patel",
-    tech: "React · Flask · Python · OpenStreetMap",
-    description:
-      "An intelligent route planning system for efficient waste collection.",
-    approach:
-      "The platform combines location data with route planning techniques to reduce unnecessary travel.",
-    repository: "GitHub Repository Submitted",
-  },
-
-  3: {
-    id: 3,
-    title: "CleanCity Monitor",
-    solver: "Rahul Verma",
-    tech: "Flutter · Firebase · Python",
-    description:
-      "A smart monitoring application for tracking urban waste collection.",
-    approach:
-      "The mobile application tracks waste collection activity and provides monitoring information.",
-    repository: "GitHub Repository Submitted",
-  },
-};
-
 function SubmissionReview() {
   const { id } = useParams();
 
-  const [submission, setSubmission] = useState(
-    fallbackSubmissions[id] || fallbackSubmissions[1]
-  );
-
+  const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [reviewStatus, setReviewStatus] = useState("");
+  const [reviewLoading, setReviewLoading] = useState(false);
 
   useEffect(() => {
     const loadSubmission = async () => {
       try {
         const data = await getSolutionById(id);
-
-        if (data) {
-          setSubmission(data);
-        }
-
+        setSubmission(data);
         setError("");
       } catch (err) {
-        console.error(err);
-
-        setError(
-          "Backend not connected yet. Showing sample submission."
-        );
-
-        setSubmission(
-          fallbackSubmissions[id] || fallbackSubmissions[1]
-        );
+        console.error("Failed to load submission:", err);
+        setError(err.message || "Unable to load this submission.");
       } finally {
         setLoading(false);
       }
@@ -87,17 +36,18 @@ function SubmissionReview() {
   }, [id]);
 
   const handleReview = async (status) => {
-    setReviewStatus("");
-
     try {
-      await reviewSolution(id, { status });
+      setReviewLoading(true);
+      setError("");
 
-      setReviewStatus(status);
+      const updatedSubmission = await reviewSolution(id, status);
+
+      setSubmission(updatedSubmission);
     } catch (err) {
-      console.error(err);
-
-      // Demo mode
-      setReviewStatus(status);
+      console.error("Failed to review submission:", err);
+      setError(err.message || "Unable to update submission status.");
+    } finally {
+      setReviewLoading(false);
     }
   };
 
@@ -110,21 +60,39 @@ function SubmissionReview() {
     );
   }
 
+  if (!submission) {
+    return (
+      <main className="submission-review-page">
+        <Navbar />
+
+        <section className="submission-review-content">
+          <ErrorMessage message={error || "Submission not found."} />
+
+          <Link to="/owner-dashboard" className="review-back-link">
+            ← Back to Dashboard
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  const isSelected = submission.status === "SELECTED";
+
   return (
     <main className="submission-review-page">
       <Navbar />
 
       <section className="submission-review-header">
         <Link
-          to="/owner-dashboard"
+          to={`/submissions/${submission.problemId}`}
           className="review-back-link"
         >
-          ← Back to Dashboard
+          ← Back to Submissions
         </Link>
 
         <span>SUBMISSION REVIEW</span>
 
-        <h1>{submission.title}</h1>
+        <h1>{submission.solutionTitle}</h1>
 
         <p>
           Review the submitted solution, technical approach,
@@ -143,17 +111,7 @@ function SubmissionReview() {
 
             <h2>About the Solution</h2>
 
-            <p>{submission.description}</p>
-          </div>
-
-          <div className="review-card">
-            <span className="review-label">
-              SOLUTION APPROACH
-            </span>
-
-            <h2>How does it solve the problem?</h2>
-
-            <p>{submission.approach}</p>
+            <p>{submission.solutionDescription}</p>
           </div>
 
           <div className="review-card">
@@ -163,41 +121,93 @@ function SubmissionReview() {
 
             <h2>Technologies Used</h2>
 
-            <p>{submission.tech}</p>
+            <p>{submission.techStack || "Not provided"}</p>
+          </div>
+
+          <div className="review-card">
+            <span className="review-label">
+              ADDITIONAL NOTES
+            </span>
+
+            <h2>More Information</h2>
+
+            <p>{submission.additionalNotes || "No additional notes provided."}</p>
+          </div>
+
+          <div className="review-card">
+            <span className="review-label">
+              PROJECT RESOURCES
+            </span>
+
+            <h2>Explore the Project</h2>
+
+            <p>
+              GitHub Repository:{" "}
+              {submission.githubUrl ? (
+                <a href={submission.githubUrl} target="_blank" rel="noreferrer">
+                  View Repository
+                </a>
+              ) : (
+                "Not provided"
+              )}
+            </p>
+
+            <p>
+              Demo Link:{" "}
+              {submission.demoUrl ? (
+                <a href={submission.demoUrl} target="_blank" rel="noreferrer">
+                  View Demo
+                </a>
+              ) : (
+                "Not provided"
+              )}
+            </p>
           </div>
         </div>
 
         <aside className="review-sidebar">
           <span>SUBMITTED BY</span>
 
-          <h3>{submission.solver}</h3>
+          <h3>{submission.submittedByName}</h3>
 
-          <p>{submission.repository}</p>
+          <p>
+            Problem: {submission.problemTitle}
+          </p>
 
-          <button
-            className="approve-button"
-            onClick={() => handleReview("approved")}
-          >
-            Approve Solution
-          </button>
+          <p>
+            Current Status: <strong>{submission.status}</strong>
+          </p>
 
-          <button
-            className="reject-button"
-            onClick={() => handleReview("changes")}
-          >
-            Request Changes
-          </button>
-
-          {reviewStatus === "approved" && (
+          {isSelected ? (
             <p className="review-status-message">
-              ✅ Solution approved successfully.
+              This solution has been selected as the best solution.
             </p>
-          )}
+          ) : (
+            <>
+              <button
+                className="approve-button"
+                onClick={() => handleReview("ACCEPTED")}
+                disabled={reviewLoading}
+              >
+                {reviewLoading ? "Updating..." : "Accept Solution"}
+              </button>
 
-          {reviewStatus === "changes" && (
-            <p className="review-status-message">
-              ✏️ Change request has been recorded.
-            </p>
+              <button
+                className="reject-button"
+                onClick={() => handleReview("REJECTED")}
+                disabled={reviewLoading}
+              >
+                Reject Solution
+              </button>
+
+              <button
+                className="approve-button"
+                onClick={() => handleReview("SELECTED")}
+                disabled={reviewLoading}
+              >
+                Select as Best Solution
+              </button>
+            </>
           )}
         </aside>
       </section>

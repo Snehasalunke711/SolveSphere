@@ -1,3 +1,4 @@
+
 import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
@@ -8,22 +9,21 @@ function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const dashboardPath =
-    user?.role === "owner" ? "/owner-dashboard" : "/dashboard";
+  const isOwner = user?.role === "owner";
+
+  const dashboardPath = isOwner ? "/owner-dashboard" : "/dashboard";
+
+  const closeMenu = () => setMenuOpen(false);
 
   const handleLogout = () => {
     logout();
-    setMenuOpen(false);
+    closeMenu();
     navigate("/");
   };
 
   return (
     <nav className="navbar">
-      <Link
-        to="/"
-        className="navbar-logo"
-        onClick={() => setMenuOpen(false)}
-      >
+      <Link to="/" className="navbar-logo" onClick={closeMenu}>
         Solve<span>Sphere</span>
       </Link>
 
@@ -36,27 +36,26 @@ function Navbar() {
 
       <div className={`navbar-menu ${menuOpen ? "active" : ""}`}>
         <div className="navbar-links">
-          <Link to="/explore" onClick={() => setMenuOpen(false)}>
-            Explore Problems
-          </Link>
-
           {!user && (
-            <a
-              href="/#how-it-works"
-              onClick={() => setMenuOpen(false)}
-            >
+            <a href="/#how-it-works" onClick={closeMenu}>
               How It Works
             </a>
           )}
 
+          {user && !isOwner && (
+            <Link to="/explore" onClick={closeMenu}>
+              Explore Problems
+            </Link>
+          )}
+
           {user && (
-            <Link to={dashboardPath} onClick={() => setMenuOpen(false)}>
+            <Link to={dashboardPath} onClick={closeMenu}>
               Dashboard
             </Link>
           )}
 
           {user && (
-            <Link to="/profile" onClick={() => setMenuOpen(false)}>
+            <Link to="/profile" onClick={closeMenu}>
               Profile
             </Link>
           )}
@@ -68,7 +67,7 @@ function Navbar() {
               <Link
                 to="/login"
                 className="login-button"
-                onClick={() => setMenuOpen(false)}
+                onClick={closeMenu}
               >
                 Login
               </Link>
@@ -76,16 +75,13 @@ function Navbar() {
               <Link
                 to="/register"
                 className="signup-button"
-                onClick={() => setMenuOpen(false)}
+                onClick={closeMenu}
               >
                 Sign Up
               </Link>
             </>
           ) : (
-            <button
-              className="login-button"
-              onClick={handleLogout}
-            >
+            <button className="login-button" onClick={handleLogout}>
               Logout
             </button>
           )}

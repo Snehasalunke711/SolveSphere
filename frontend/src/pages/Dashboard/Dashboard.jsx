@@ -1,3 +1,4 @@
+
 import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
@@ -6,34 +7,8 @@ import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import { getSolverDashboard } from "../../services/dashboardService";
 import "./Dashboard.css";
 
-const fallbackDashboard = {
-  stats: {
-    explored: 12,
-    active: 3,
-    submitted: 5,
-  },
-  activeProblems: [
-    {
-      id: 1,
-      category: "SMART CITY",
-      title: "Improve Urban Waste Collection Efficiency",
-      description:
-        "Build a smarter system to monitor waste collection and optimize collection routes.",
-      status: "In Progress",
-    },
-    {
-      id: 2,
-      category: "HEALTHCARE",
-      title: "Improve Emergency Resource Discovery",
-      description:
-        "Design a platform that helps users quickly discover nearby emergency resources.",
-      status: "Research",
-    },
-  ],
-};
-
 function Dashboard() {
-  const [dashboard, setDashboard] = useState(fallbackDashboard);
+  const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -41,20 +16,10 @@ function Dashboard() {
     const loadDashboard = async () => {
       try {
         const data = await getSolverDashboard();
-
-        if (data) {
-          setDashboard(data);
-        }
-
-        setError("");
+        setDashboard(data);
       } catch (err) {
-        console.error(err);
-
-        setError(
-          "Backend not connected yet. Showing sample dashboard."
-        );
-
-        setDashboard(fallbackDashboard);
+        console.error("Dashboard loading error:", err);
+        setError(err.message || "Unable to load dashboard data.");
       } finally {
         setLoading(false);
       }
@@ -81,37 +46,34 @@ function Dashboard() {
           </p>
         </div>
 
-        <Link
-          to="/explore"
-          className="dashboard-explore-button"
-        >
+        <Link to="/explore" className="dashboard-explore-button">
           Explore Problems
         </Link>
       </section>
 
       {loading ? (
         <Loading />
-      ) : (
+      ) : error ? (
+        <ErrorMessage message={error} />
+      ) : dashboard ? (
         <>
-          {error && <ErrorMessage message={error} />}
-
           <section className="dashboard-stats">
             <div className="stat-card">
-              <span>Problems Explored</span>
+              <span>Available Problems</span>
               <h2>{dashboard.stats.explored}</h2>
-              <p>Challenges viewed</p>
+              <p>Challenges available</p>
             </div>
 
             <div className="stat-card">
               <span>Active Solutions</span>
               <h2>{dashboard.stats.active}</h2>
-              <p>Currently in progress</p>
+              <p>Awaiting review or accepted</p>
             </div>
 
             <div className="stat-card">
-              <span>Submitted</span>
+              <span>Total Submissions</span>
               <h2>{dashboard.stats.submitted}</h2>
-              <p>Solutions completed</p>
+              <p>Solutions submitted</p>
             </div>
           </section>
 
@@ -130,10 +92,10 @@ function Dashboard() {
             <div className="active-problems">
               {dashboard.activeProblems.length === 0 ? (
                 <div className="empty-state">
-                  <h2>No Active Problems</h2>
+                  <h2>No Submitted Solutions Yet</h2>
 
                   <p>
-                    Explore problems and start solving your first challenge.
+                    Explore available problems and submit your first solution.
                   </p>
 
                   <Link
@@ -145,10 +107,7 @@ function Dashboard() {
                 </div>
               ) : (
                 dashboard.activeProblems.map((problem) => (
-                  <div
-                    className="problem-card"
-                    key={problem.id}
-                  >
+                  <div className="problem-card" key={problem.id}>
                     <span className="problem-category">
                       {problem.category}
                     </span>
@@ -161,7 +120,7 @@ function Dashboard() {
                       <span>{problem.status}</span>
 
                       <Link to={`/problem/${problem.id}`}>
-                        Continue Solving
+                        View Problem
                       </Link>
                     </div>
                   </div>
@@ -170,7 +129,7 @@ function Dashboard() {
             </div>
           </section>
         </>
-      )}
+      ) : null}
     </main>
   );
 }

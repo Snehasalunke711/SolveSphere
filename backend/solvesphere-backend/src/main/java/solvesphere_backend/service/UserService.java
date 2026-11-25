@@ -5,6 +5,7 @@ import solvesphere_backend.dto.RegisterRequest;
 import solvesphere_backend.dto.RegisterResponse;
 import solvesphere_backend.dto.LoginRequest;
 import solvesphere_backend.dto.LoginResponse;
+import solvesphere_backend.dto.CurrentUserResponse;
 import solvesphere_backend.entity.User;
 import solvesphere_backend.repository.UserRepository;
 import solvesphere_backend.security.JwtService;
@@ -42,6 +43,7 @@ public class UserService {
         user.setName(request.getName().trim());
         user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole().trim().toLowerCase());
 
         User savedUser = userRepository.save(user);
 
@@ -76,8 +78,25 @@ public class UserService {
             user.getId(),
             user.getName(),
             user.getEmail(),
+            user.getRole(),
             "Login successful",
             token
+        );
+    }
+
+    public CurrentUserResponse getCurrentUser(String email) {
+
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "User not found"
+            ));
+
+        return new CurrentUserResponse(
+            user.getId(),
+            user.getName(),
+            user.getEmail(),
+            user.getRole()
         );
     }
 }

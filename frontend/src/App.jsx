@@ -1,8 +1,7 @@
-import { Routes, Route } from "react-router";
 
+import { Routes, Route } from "react-router";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-
 import Landing from "./pages/Landing/Landing";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
@@ -22,19 +21,23 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
-        {/* Public routes */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
+        <Route element={<ProtectedRoute allowedRole="solver" />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/explore" element={<ExploreProblems />} />
           <Route path="/problem/:id" element={<ProblemDetails />} />
           <Route path="/submit-solution/:id" element={<SubmitSolution />} />
           <Route path="/ai-suggestions" element={<AISuggestions />} />
+        </Route>
+
+        <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRole="owner" />}>
           <Route path="/owner-dashboard" element={<OwnerDashboard />} />
           <Route path="/submissions/:id" element={<ViewSubmissions />} />
           <Route path="/post-problem" element={<PostProblem />} />

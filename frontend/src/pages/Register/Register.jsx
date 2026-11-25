@@ -1,11 +1,14 @@
 
 import "../Login/Login.css";
 import { Link, useNavigate } from "react-router";
+import { useState } from "react";
+import { registerUser } from "../../services/authService";
 
 function Register() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
     const name = e.target.name.value;
@@ -13,36 +16,24 @@ function Register() {
     const role = e.target.role.value;
     const password = e.target.password.value;
 
-    const users = JSON.parse(
-      localStorage.getItem("solvesphere_users") || "[]"
-    );
+    try {
+      setLoading(true);
 
-    const existingUser = users.find(
-      (user) => user.email === email
-    );
+      await registerUser({
+        name,
+        email,
+        password,
+        role,
+      });
 
-    if (existingUser) {
-      alert("An account with this email already exists.");
-      return;
+      alert("Account created successfully! Please sign in.");
+      navigate("/login");
+    } catch (error) {
+      console.error("Registration failed:", error);
+      alert(error.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    const newUser = {
-      name,
-      email,
-      role,
-      password,
-    };
-
-    users.push(newUser);
-
-    localStorage.setItem(
-      "solvesphere_users",
-      JSON.stringify(users)
-    );
-
-    alert("Account created successfully! Please sign in.");
-
-    navigate("/login");
   };
 
   return (
@@ -96,12 +87,18 @@ function Register() {
               type="password"
               name="password"
               placeholder="Create a password"
+              minLength={8}
+              maxLength={72}
               required
             />
           </div>
 
-          <button type="submit" className="auth-button">
-            Create Account
+          <button
+            type="submit"
+            className="auth-button"
+            disabled={loading}
+          >
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 

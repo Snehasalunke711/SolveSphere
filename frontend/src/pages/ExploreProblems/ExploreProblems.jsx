@@ -17,74 +17,44 @@ function ExploreProblems() {
 
   const categories = [
     "ALL",
-    "SMART CITY",
-    "HEALTHCARE",
-    "EDUCATION",
-    "ENVIRONMENT",
-    "AGRICULTURE",
-    "TRANSPORT",
+    "AI/ML",
+    "WEB DEVELOPMENT",
+    "APP DEVELOPMENT",
+    "DATA SCIENCE",
+    "IOT",
+    "OTHER",
   ];
 
   useEffect(() => {
     const loadProblems = async () => {
       try {
         setLoading(true);
-        const data = await getProblems();
-        setProblems(Array.isArray(data) ? data : []);
+
+        const data = await getProblems({
+          search: searchTerm,
+          category: selectedCategory,
+          sortBy: sortBy === "default" ? "newest" : sortBy,
+        });
+
+        let results = Array.isArray(data) ? data : [];
+
+        if (sortBy === "za") {
+          results = [...results].reverse();
+        }
+
+        setProblems(results);
         setError("");
       } catch (err) {
         console.error("Failed to load problems:", err);
-        setError("Unable to load problems. Please try again.");
+        setError(err.message || "Unable to load problems. Please try again.");
+        setProblems([]);
       } finally {
         setLoading(false);
       }
     };
 
     loadProblems();
-  }, []);
-
-  // Category filter
-  let filteredProblems =
-    selectedCategory === "ALL"
-      ? [...problems]
-      : problems.filter(
-          (problem) =>
-            problem.category?.toUpperCase() === selectedCategory
-        );
-
-  // Search filter
-  filteredProblems = filteredProblems.filter((problem) => {
-    const search = searchTerm.toLowerCase().trim();
-
-    return (
-      problem.title?.toLowerCase().includes(search) ||
-      problem.description?.toLowerCase().includes(search) ||
-      problem.objective?.toLowerCase().includes(search)
-    );
-  });
-
-  // Sorting
-  if (sortBy === "az") {
-    filteredProblems.sort((a, b) =>
-      (a.title || "").localeCompare(b.title || "")
-    );
-  } else if (sortBy === "za") {
-    filteredProblems.sort((a, b) =>
-      (b.title || "").localeCompare(a.title || "")
-    );
-  } else if (sortBy === "newest") {
-    filteredProblems.sort(
-      (a, b) =>
-        new Date(b.createdAt || b.createdDate || 0) -
-        new Date(a.createdAt || a.createdDate || 0)
-    );
-  } else if (sortBy === "oldest") {
-    filteredProblems.sort(
-      (a, b) =>
-        new Date(a.createdAt || a.createdDate || 0) -
-        new Date(b.createdAt || b.createdDate || 0)
-    );
-  }
+  }, [selectedCategory, searchTerm, sortBy]);
 
   return (
     <main className="explore-page">
@@ -102,7 +72,6 @@ function ExploreProblems() {
       </section>
 
       <section className="explore-content">
-        {/* Search and Sort */}
         <div className="explore-tools">
           <input
             type="text"
@@ -125,7 +94,6 @@ function ExploreProblems() {
           </select>
         </div>
 
-        {/* Category Filters */}
         <div className="problem-filters">
           {categories.map((category) => (
             <button
@@ -144,7 +112,7 @@ function ExploreProblems() {
           <Loading />
         ) : error ? (
           <ErrorMessage message={error} />
-        ) : filteredProblems.length === 0 ? (
+        ) : problems.length === 0 ? (
           <div className="empty-state">
             <h2>No Problems Found</h2>
             <p>
@@ -154,12 +122,12 @@ function ExploreProblems() {
         ) : (
           <>
             <p className="problem-results-count">
-              Showing {filteredProblems.length}{" "}
-              {filteredProblems.length === 1 ? "problem" : "problems"}
+              Showing {problems.length}{" "}
+              {problems.length === 1 ? "problem" : "problems"}
             </p>
 
             <div className="problems-grid">
-              {filteredProblems.map((problem) => (
+              {problems.map((problem) => (
                 <article
                   className="explore-problem-card"
                   key={problem.id}

@@ -3,6 +3,7 @@ package solvesphere_backend.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class RegisterRequest {
@@ -18,6 +19,13 @@ public class RegisterRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 8, max = 72, message = "Password must contain 8 to 72 characters")
     private String password;
+
+    @NotBlank(message = "Role is required")
+    @Pattern(
+        regexp = "(?i)solver|owner",
+        message = "Role must be either solver or owner"
+    )
+    private String role;
 
     public RegisterRequest() {
     }
@@ -44,5 +52,13 @@ public class RegisterRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

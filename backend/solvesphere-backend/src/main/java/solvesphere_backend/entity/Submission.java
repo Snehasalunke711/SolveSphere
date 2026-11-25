@@ -26,11 +26,17 @@ public class Submission {
     @Column(name = "solution_description", nullable = false, columnDefinition = "TEXT")
     private String solutionDescription;
 
+    @Column(name = "tech_stack", columnDefinition = "TEXT")
+    private String techStack;
+
     @Column(name = "github_url", length = 500)
     private String githubUrl;
 
     @Column(name = "demo_url", length = 500)
     private String demoUrl;
+
+    @Column(name = "additional_notes", columnDefinition = "TEXT")
+    private String additionalNotes;
 
     @Column(nullable = false, length = 20)
     private String status = "PENDING";
@@ -86,6 +92,14 @@ public class Submission {
         this.solutionDescription = solutionDescription;
     }
 
+    public String getTechStack() {
+        return techStack;
+    }
+
+    public void setTechStack(String techStack) {
+        this.techStack = techStack;
+    }
+
     public String getGithubUrl() {
         return githubUrl;
     }
@@ -100,6 +114,14 @@ public class Submission {
 
     public void setDemoUrl(String demoUrl) {
         this.demoUrl = demoUrl;
+    }
+
+    public String getAdditionalNotes() {
+        return additionalNotes;
+    }
+
+    public void setAdditionalNotes(String additionalNotes) {
+        this.additionalNotes = additionalNotes;
     }
 
     public String getStatus() {

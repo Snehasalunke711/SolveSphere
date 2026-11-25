@@ -1,3 +1,4 @@
+
 import "./Login.css";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
@@ -23,20 +24,22 @@ function Login() {
         password,
       });
 
-      // Save user details
       const currentUser = {
         id: response.id,
         name: response.name,
         email: response.email,
+        role: response.role,
       };
 
-      // Save JWT and update AuthContext
       login(currentUser, response.token);
 
       alert("Login successful!");
 
-      // Role is not provided by backend yet
-      navigate("/dashboard");
+      if (response.role === "owner") {
+        navigate("/owner-dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.error("Login failed:", error);
       alert(error.message || "Login failed. Please check your credentials.");
@@ -53,8 +56,9 @@ function Login() {
         </div>
 
         <h1>Welcome back</h1>
+
         <p className="auth-description">
-          Sign in to continue exploring problems and building solutions.
+          Sign in to continue your SolveSphere journey.
         </p>
 
         <form className="auth-form" onSubmit={handleLogin}>
@@ -76,15 +80,6 @@ function Login() {
               placeholder="Enter your password"
               required
             />
-          </div>
-
-          <div className="form-options">
-            <label className="remember-me">
-              <input type="checkbox" />
-              Remember me
-            </label>
-
-            <a href="#">Forgot password?</a>
           </div>
 
           <button
