@@ -5,8 +5,10 @@ public class CreateSubmissionRequest {
 
     private String solutionTitle;
     private String solutionDescription;
+    private String techStack;
     private String githubUrl;
     private String demoUrl;
+    private String additionalNotes;
 
     public String getSolutionTitle() {
         return solutionTitle;
@@ -24,6 +26,14 @@ public class CreateSubmissionRequest {
         this.solutionDescription = solutionDescription;
     }
 
+    public String getTechStack() {
+        return techStack;
+    }
+
+    public void setTechStack(String techStack) {
+        this.techStack = techStack;
+    }
+
     public String getGithubUrl() {
         return githubUrl;
     }
@@ -38,5 +48,13 @@ public class CreateSubmissionRequest {
 
     public void setDemoUrl(String demoUrl) {
         this.demoUrl = demoUrl;
+    }
+
+    public String getAdditionalNotes() {
+        return additionalNotes;
+    }
+
+    public void setAdditionalNotes(String additionalNotes) {
+        this.additionalNotes = additionalNotes;
     }
 }

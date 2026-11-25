@@ -8,6 +8,10 @@ public class UserProfileResponse {
     private Long id;
     private String name;
     private String email;
+    private String role;
+    private String organization;
+    private String domain;
+    private String summary;
     private LocalDateTime createdAt;
     private long problemsCreated;
     private long problemsJoined;
@@ -21,14 +25,23 @@ public class UserProfileResponse {
             Long id,
             String name,
             String email,
+            String role,
+            String organization,
+            String domain,
+            String summary,
             LocalDateTime createdAt,
             long problemsCreated,
             long problemsJoined,
             long solutionsSubmitted,
             long acceptedSolutions) {
+
         this.id = id;
         this.name = name;
         this.email = email;
+        this.role = role;
+        this.organization = organization;
+        this.domain = domain;
+        this.summary = summary;
         this.createdAt = createdAt;
         this.problemsCreated = problemsCreated;
         this.problemsJoined = problemsJoined;
@@ -46,6 +59,22 @@ public class UserProfileResponse {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public String getSummary() {
+        return summary;
     }
 
     public LocalDateTime getCreatedAt() {

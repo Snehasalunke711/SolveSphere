@@ -1,3 +1,4 @@
+
 import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
@@ -6,32 +7,8 @@ import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import { getOwnerProblems } from "../../services/problemService";
 import "./OwnerDashboard.css";
 
-const fallbackProblems = [
-  {
-    id: 1,
-    title: "Improve Urban Waste Collection Efficiency",
-    category: "Smart City",
-    submissions: 12,
-    status: "Active",
-  },
-  {
-    id: 2,
-    title: "Improve Emergency Resource Discovery",
-    category: "Healthcare",
-    submissions: 8,
-    status: "Active",
-  },
-  {
-    id: 3,
-    title: "Personalized Learning Resource Discovery",
-    category: "Education",
-    submissions: 5,
-    status: "Reviewing",
-  },
-];
-
 function OwnerDashboard() {
-  const [problems, setProblems] = useState(fallbackProblems);
+  const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -39,20 +16,12 @@ function OwnerDashboard() {
     const loadProblems = async () => {
       try {
         const data = await getOwnerProblems();
-
-        if (data) {
-          setProblems(data);
-        }
-
+        setProblems(Array.isArray(data) ? data : []);
         setError("");
       } catch (err) {
-        console.error(err);
-
-        setError(
-          "Backend not connected yet. Showing sample dashboard."
-        );
-
-        setProblems(fallbackProblems);
+        console.error("Failed to load owner problems:", err);
+        setError(err.message || "Unable to load your problems. Please try again.");
+        setProblems([]);
       } finally {
         setLoading(false);
       }
@@ -69,7 +38,7 @@ function OwnerDashboard() {
   );
 
   const activeProblems = problems.filter(
-    (problem) => problem.status === "Active"
+    (problem) => problem.status?.toUpperCase() === "OPEN"
   ).length;
 
   return (
@@ -79,29 +48,26 @@ function OwnerDashboard() {
       <section className="owner-dashboard-header">
         <div>
           <span>PROBLEM OWNER DASHBOARD</span>
-
           <h1>Manage Your Challenges</h1>
-
           <p>
             Track problems, review submissions, and discover promising
             solutions.
           </p>
         </div>
 
-        <Link
-          to="/post-problem"
-          className="post-problem-button"
-        >
+        <Link to="/post-problem" className="post-problem-button">
           + Post New Problem
         </Link>
       </section>
 
       {loading ? (
         <Loading />
+      ) : error ? (
+        <section className="owner-dashboard-content">
+          <ErrorMessage message={error} />
+        </section>
       ) : (
         <section className="owner-dashboard-content">
-          {error && <ErrorMessage message={error} />}
-
           <div className="owner-stats">
             <div className="owner-stat-card">
               <span>Total Problems</span>
@@ -122,7 +88,6 @@ function OwnerDashboard() {
           <div className="owner-problems-section">
             <div className="owner-section-heading">
               <h2>Your Problems</h2>
-
               <p>
                 Manage challenges and review submitted solutions.
               </p>
@@ -132,7 +97,6 @@ function OwnerDashboard() {
               {problems.length === 0 ? (
                 <div className="empty-state">
                   <h2>No Problems Posted</h2>
-
                   <p>
                     Post your first challenge and start receiving innovative
                     solutions.
@@ -153,7 +117,7 @@ function OwnerDashboard() {
                   >
                     <div>
                       <span className="owner-problem-category">
-                        {problem.category}
+                        {problem.category || "Uncategorized"}
                       </span>
 
                       <h3>{problem.title}</h3>
@@ -165,7 +129,9 @@ function OwnerDashboard() {
 
                     <div className="owner-problem-actions">
                       <span className="owner-status">
-                        {problem.status}
+                        {problem.status?.toUpperCase() === "OPEN"
+                          ? "Active"
+                          : problem.status}
                       </span>
 
                       <Link to={`/submissions/${problem.id}`}>

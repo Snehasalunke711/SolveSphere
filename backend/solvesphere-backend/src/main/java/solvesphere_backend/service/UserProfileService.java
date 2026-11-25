@@ -2,6 +2,7 @@
 package solvesphere_backend.service;
 
 import solvesphere_backend.dto.UserProfileResponse;
+import solvesphere_backend.dto.UpdateProfileRequest;
 import solvesphere_backend.entity.User;
 import solvesphere_backend.repository.UserRepository;
 import solvesphere_backend.repository.ProblemRepository;
@@ -34,7 +35,6 @@ public class UserProfileService {
 
     @Transactional(readOnly = true)
     public UserProfileResponse getProfile(Long userId) {
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -46,7 +46,6 @@ public class UserProfileService {
 
     @Transactional(readOnly = true)
     public UserProfileResponse getProfileByEmail(String email) {
-
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -56,8 +55,40 @@ public class UserProfileService {
         return buildProfile(user);
     }
 
-    private UserProfileResponse buildProfile(User user) {
+    @Transactional
+    public UserProfileResponse updateProfile(
+            String email,
+            UpdateProfileRequest request) {
 
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found"
+                ));
+
+        if ("owner".equalsIgnoreCase(user.getRole())) {
+            user.setOrganization(clean(request.getOrganization()));
+            user.setDomain(clean(request.getDomain()));
+            user.setSummary(clean(request.getSummary()));
+        } else {
+            user.setOrganization(null);
+            user.setDomain(null);
+            user.setSummary(clean(request.getSummary()));
+        }
+
+        User savedUser = userRepository.save(user);
+
+        return buildProfile(savedUser);
+    }
+
+    private String clean(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
+    }
+
+    private UserProfileResponse buildProfile(User user) {
         Long userId = user.getId();
 
         long problemsCreated =
@@ -79,6 +110,10 @@ public class UserProfileService {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
+                user.getRole(),
+                user.getOrganization(),
+                user.getDomain(),
+                user.getSummary(),
                 user.getCreatedAt(),
                 problemsCreated,
                 problemsJoined,

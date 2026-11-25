@@ -2,56 +2,103 @@
 import { Link, useParams, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
-import { getProblemById } from "../../services/problemService";
+import { useAuth } from "../../context/AuthContext";
+import {
+  getProblemById,
+  getProblemParticipants,
+  joinProblem,
+  leaveProblem,
+} from "../../services/problemService";
+import { getMySubmissions } from "../../services/submissionService";
 import "./ProblemDetails.css";
 
 function ProblemDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [problem, setProblem] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  // Temporary demo participation data
+  const [participants, setParticipants] = useState([]);
   const [joined, setJoined] = useState(false);
-  const [participants, setParticipants] = useState([
-    { id: 1, name: "Aarav Sharma" },
-    { id: 2, name: "Priya Nair" },
-    { id: 3, name: "Rahul Kumar" },
-  ]);
+  const [mySubmission, setMySubmission] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [actionError, setActionError] = useState("");
 
   useEffect(() => {
     const loadProblem = async () => {
       try {
         setLoading(true);
-        const data = await getProblemById(id);
-        setProblem(data);
         setError("");
+
+        const [problemData, participantData, submissionsData] =
+          await Promise.all([
+            getProblemById(id),
+            getProblemParticipants(id),
+            getMySubmissions(),
+          ]);
+
+        setProblem(problemData);
+        setParticipants(participantData);
+
+        const hasJoined = participantData.some(
+          (person) => String(person.userId) === String(user?.id)
+        );
+
+        setJoined(hasJoined);
+
+        const existingSubmission = submissionsData.find(
+          (submission) => String(submission.problemId) === String(id)
+        );
+
+        setMySubmission(existingSubmission || null);
       } catch (err) {
-        console.error(err);
-        setError("Unable to load problem.");
+        console.error("Unable to load problem:", err);
+        setError(err.message || "Unable to load problem.");
       } finally {
         setLoading(false);
       }
     };
 
     loadProblem();
-  }, [id]);
+  }, [id, user?.id]);
 
-  const handleJoin = () => {
-    setJoined(true);
-    setParticipants((prev) => [
-      ...prev,
-      { id: "demo-user", name: "Demo Solver" },
-    ]);
+  const handleJoin = async () => {
+    try {
+      setActionLoading(true);
+      setActionError("");
+
+      const newParticipant = await joinProblem(id);
+
+      setParticipants((prev) => [...prev, newParticipant]);
+      setJoined(true);
+    } catch (err) {
+      console.error("Unable to join problem:", err);
+      setActionError(err.message || "Unable to join this problem.");
+    } finally {
+      setActionLoading(false);
+    }
   };
 
-  const handleLeave = () => {
-    setJoined(false);
-    setParticipants((prev) =>
-      prev.filter((person) => person.id !== "demo-user")
-    );
+  const handleLeave = async () => {
+    try {
+      setActionLoading(true);
+      setActionError("");
+
+      await leaveProblem(id);
+
+      setParticipants((prev) =>
+        prev.filter((person) => String(person.userId) !== String(user?.id))
+      );
+
+      setJoined(false);
+    } catch (err) {
+      console.error("Unable to leave problem:", err);
+      setActionError(err.message || "Unable to leave this problem.");
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleStartSolving = () => {
@@ -62,6 +109,10 @@ function ProblemDetails() {
 
     navigate(`/submit-solution/${id}`);
   };
+
+  const canEditSubmission =
+    mySubmission?.status?.toUpperCase() === "PENDING" &&
+    problem?.status?.toUpperCase() !== "CLOSED";
 
   if (loading) {
     return (
@@ -111,7 +162,7 @@ function ProblemDetails() {
         <div className="problem-main-content">
           <div className="details-card">
             <span className="details-label">PROBLEM OBJECTIVE</span>
-            <h2>{problem.objective}</h2>
+            <h2>{problem.objective || problem.description}</h2>
           </div>
 
           <div className="details-card">
@@ -125,58 +176,71 @@ function ProblemDetails() {
             </ul>
           </div>
 
-          {/* Participants section */}
           <div className="details-card participants-card">
             <span className="details-label">PROBLEM PARTICIPANTS</span>
 
-            <h2>
-              {participants.length} Participants
-            </h2>
+            <h2>{participants.length} Participants</h2>
 
             <p>Students who have joined this challenge.</p>
 
             <div className="participants-list">
               {participants.map((person) => (
-                <div className="participant-item" key={person.id}>
+                <div className="participant-item" key={person.participationId}>
                   <div className="participant-avatar">
-                    {person.name.charAt(0).toUpperCase()}
+                    {person.userName.charAt(0).toUpperCase()}
                   </div>
-                  <span>{person.name}</span>
-                  {person.id === "demo-user" && (
+                  <span>{person.userName}</span>
+                  {String(person.userId) === String(user?.id) && (
                     <span className="you-label">You</span>
                   )}
                 </div>
               ))}
+
+              {participants.length === 0 && (
+                <p>No participants have joined this challenge yet.</p>
+              )}
             </div>
           </div>
         </div>
 
         <aside className="problem-action-card">
-          <span>READY TO SOLVE?</span>
+          <span>
+            {mySubmission ? "YOUR SUBMISSION" : "READY TO SOLVE?"}
+          </span>
 
           <h3>
-            {joined ? "You're part of this challenge!" : "Join this challenge"}
+            {mySubmission
+              ? "You've submitted a solution!"
+              : joined
+                ? "You're part of this challenge!"
+                : "Join this challenge"}
           </h3>
 
           <p>
-            {joined
-              ? "You're now participating in this problem. Explore AI guidance and start building your solution."
-              : "Join this problem to participate, get AI-powered guidance, and submit your solution."}
+            {mySubmission
+              ? "Your solution has been submitted. You can check its status below."
+              : joined
+                ? "You're now participating in this problem. Explore AI guidance and start building your solution."
+                : "Join this problem to participate, get AI-powered guidance, and submit your solution."}
           </p>
+
+          {actionError && <p className="error-message">{actionError}</p>}
 
           {!joined ? (
             <button
               className="join-problem-button"
               onClick={handleJoin}
+              disabled={actionLoading || mySubmission !== null}
             >
-              Join Problem
+              {actionLoading ? "Joining..." : "Join Problem"}
             </button>
           ) : (
             <button
               className="leave-problem-button"
               onClick={handleLeave}
+              disabled={actionLoading}
             >
-              Leave Problem
+              {actionLoading ? "Leaving..." : "Leave Problem"}
             </button>
           )}
 
@@ -187,17 +251,42 @@ function ProblemDetails() {
             Get AI Suggestions
           </Link>
 
-          <button
-            className={`start-solution-button ${!joined ? "locked" : ""}`}
-            onClick={handleStartSolving}
-          >
-            {joined ? "Start Solving" : "Join to Start Solving"}
-          </button>
+          {mySubmission ? (
+            <>
+              <p className="submission-status">
+                Status: <strong>{mySubmission.status}</strong>
+              </p>
 
-          {!joined && (
-            <p className="join-required-message">
-              Join the problem before submitting a solution.
-            </p>
+              {canEditSubmission && (
+                <button
+                  className="start-solution-button"
+                  onClick={handleStartSolving}
+                >
+                  Edit Solution
+                </button>
+              )}
+
+              {!canEditSubmission && (
+                <p className="join-required-message">
+                  This submission can no longer be edited.
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <button
+                className={`start-solution-button ${!joined ? "locked" : ""}`}
+                onClick={handleStartSolving}
+              >
+                {joined ? "Start Solving" : "Join to Start Solving"}
+              </button>
+
+              {!joined && (
+                <p className="join-required-message">
+                  Join the problem before submitting a solution.
+                </p>
+              )}
+            </>
           )}
         </aside>
       </section>

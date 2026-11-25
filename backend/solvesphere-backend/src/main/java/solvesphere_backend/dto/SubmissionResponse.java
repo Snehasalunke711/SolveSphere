@@ -12,8 +12,10 @@ public class SubmissionResponse {
     private String submittedByName;
     private String solutionTitle;
     private String solutionDescription;
+    private String techStack;
     private String githubUrl;
     private String demoUrl;
+    private String additionalNotes;
     private String status;
     private LocalDateTime submittedAt;
 
@@ -28,10 +30,13 @@ public class SubmissionResponse {
             String submittedByName,
             String solutionTitle,
             String solutionDescription,
+            String techStack,
             String githubUrl,
             String demoUrl,
+            String additionalNotes,
             String status,
             LocalDateTime submittedAt) {
+
         this.id = id;
         this.problemId = problemId;
         this.problemTitle = problemTitle;
@@ -39,8 +44,10 @@ public class SubmissionResponse {
         this.submittedByName = submittedByName;
         this.solutionTitle = solutionTitle;
         this.solutionDescription = solutionDescription;
+        this.techStack = techStack;
         this.githubUrl = githubUrl;
         this.demoUrl = demoUrl;
+        this.additionalNotes = additionalNotes;
         this.status = status;
         this.submittedAt = submittedAt;
     }
@@ -73,12 +80,20 @@ public class SubmissionResponse {
         return solutionDescription;
     }
 
+    public String getTechStack() {
+        return techStack;
+    }
+
     public String getGithubUrl() {
         return githubUrl;
     }
 
     public String getDemoUrl() {
         return demoUrl;
+    }
+
+    public String getAdditionalNotes() {
+        return additionalNotes;
     }
 
     public String getStatus() {

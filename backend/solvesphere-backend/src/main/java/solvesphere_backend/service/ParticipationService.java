@@ -8,14 +8,12 @@ import solvesphere_backend.entity.User;
 import solvesphere_backend.repository.ParticipationRepository;
 import solvesphere_backend.repository.ProblemRepository;
 import solvesphere_backend.repository.UserRepository;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 
 @Service
@@ -29,107 +27,77 @@ public class ParticipationService {
             ParticipationRepository participationRepository,
             ProblemRepository problemRepository,
             UserRepository userRepository) {
-
         this.participationRepository = participationRepository;
         this.problemRepository = problemRepository;
         this.userRepository = userRepository;
     }
 
     private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null ||
-                !authentication.isAuthenticated() ||
-                "anonymousUser".equals(authentication.getName())) {
-
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "User is not authenticated"
-            );
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getName())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
         }
 
         return userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Logged-in user not found"
-                        ));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Logged-in user not found"));
+    }
+
+    private User requireSolverRole() {
+        User user = getAuthenticatedUser();
+
+        if (!"solver".equalsIgnoreCase(user.getRole())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only solvers can participate in problems");
+        }
+
+        return user;
     }
 
     private Problem getProblem(Long problemId) {
-
         return problemRepository.findById(problemId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Problem not found with ID: " + problemId
-                        ));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Problem not found with ID: " + problemId));
     }
 
     @Transactional
     public ParticipationResponse joinProblem(Long problemId) {
-
-        User user = getAuthenticatedUser();
+        User user = requireSolverRole();
         Problem problem = getProblem(problemId);
 
         if (!"OPEN".equalsIgnoreCase(problem.getStatus())) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "This problem is not open for participation"
-            );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This problem is not open for participation");
         }
 
-        if (problem.getOwner().getId().equals(user.getId())) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Problem owners cannot join their own problems"
-            );
+        if (problem.getOwner() != null && problem.getOwner().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Problem owners cannot join their own problems");
         }
 
-        if (participationRepository.existsByUserIdAndProblemId(
-                user.getId(), problemId)) {
-
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "You have already joined this problem"
-            );
+        if (participationRepository.existsByUserIdAndProblemId(user.getId(), problemId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "You have already joined this problem");
         }
 
         Participation participation = new Participation();
         participation.setUser(user);
         participation.setProblem(problem);
 
-        Participation savedParticipation =
-                participationRepository.save(participation);
-
+        Participation savedParticipation = participationRepository.save(participation);
         return convertToResponse(savedParticipation);
     }
 
     @Transactional
     public void leaveProblem(Long problemId) {
-
-        User user = getAuthenticatedUser();
-
+        User user = requireSolverRole();
         getProblem(problemId);
 
-        Participation participation =
-                participationRepository.findByUserIdAndProblemId(
-                        user.getId(),
-                        problemId
-                ).orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "You have not joined this problem"
-                        ));
+        Participation participation = participationRepository.findByUserIdAndProblemId(user.getId(), problemId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "You have not joined this problem"));
 
         participationRepository.delete(participation);
     }
 
     @Transactional(readOnly = true)
     public List<ParticipationResponse> getParticipants(Long problemId) {
-
+        getAuthenticatedUser();
         getProblem(problemId);
 
         return participationRepository.findByProblemId(problemId)
@@ -138,16 +106,13 @@ public class ParticipationService {
                 .toList();
     }
 
-    private ParticipationResponse convertToResponse(
-            Participation participation) {
-
+    private ParticipationResponse convertToResponse(Participation participation) {
         User user = participation.getUser();
 
         return new ParticipationResponse(
                 participation.getId(),
                 user.getId(),
                 user.getName(),
-                user.getEmail(),
                 participation.getJoinedAt()
         );
     }

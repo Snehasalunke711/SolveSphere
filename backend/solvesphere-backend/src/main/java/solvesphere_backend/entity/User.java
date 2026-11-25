@@ -1,3 +1,4 @@
+
 package solvesphere_backend.entity;
 
 import jakarta.persistence.*;
@@ -20,6 +21,18 @@ public class User {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
+    @Column(nullable = false, length = 20)
+    private String role = "solver";
+
+    @Column(length = 200)
+    private String organization;
+
+    @Column(length = 150)
+    private String domain;
+
+    @Column(length = 2000)
+    private String summary;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -28,6 +41,9 @@ public class User {
 
     @PrePersist
     public void prePersist() {
+        if (role == null || role.isBlank()) {
+            role = "solver";
+        }
         createdAt = LocalDateTime.now();
     }
 
@@ -61,6 +77,38 @@ public class User {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
     public LocalDateTime getCreatedAt() {

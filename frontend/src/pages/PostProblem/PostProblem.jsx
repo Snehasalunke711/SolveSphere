@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import Navbar from "../../components/Navbar/Navbar";
@@ -27,22 +28,15 @@ function PostProblem() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
     try {
       await createProblem(formData);
-
       alert("Problem posted successfully!");
-
       navigate("/owner-dashboard");
     } catch (error) {
-      console.error(error);
-
-      // Demo mode if backend is unavailable
-      alert("Backend not connected. Running in demo mode.");
-
-      navigate("/owner-dashboard");
+      console.error("Problem posting failed:", error);
+      alert(error.message || "Unable to post problem. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -54,9 +48,7 @@ function PostProblem() {
 
       <section className="post-problem-header">
         <span>POST A PROBLEM</span>
-
         <h1>Share a Real-World Challenge</h1>
-
         <p>
           Describe your problem clearly and help talented problem solvers build
           meaningful solutions.
@@ -67,7 +59,6 @@ function PostProblem() {
         <form className="post-problem-form" onSubmit={handleSubmit}>
           <div className="problem-form-group">
             <label htmlFor="title">Problem Title</label>
-
             <input
               id="title"
               type="text"
@@ -81,7 +72,6 @@ function PostProblem() {
 
           <div className="problem-form-group">
             <label htmlFor="category">Category</label>
-
             <select
               id="category"
               name="category"
@@ -90,19 +80,17 @@ function PostProblem() {
               required
             >
               <option value="">Select Category</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Education">Education</option>
-              <option value="Smart City">Smart City</option>
-              <option value="Environment">Environment</option>
-              <option value="Agriculture">Agriculture</option>
-              <option value="Technology">Technology</option>
+              <option value="AI/ML">AI/ML</option>
+              <option value="Web Development">Web Development</option>
+              <option value="App Development">App Development</option>
+              <option value="Data Science">Data Science</option>
+              <option value="IoT">IoT</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
-          {/* Difficulty Dropdown */}
           <div className="problem-form-group">
             <label htmlFor="difficulty">Difficulty</label>
-
             <select
               id="difficulty"
               name="difficulty"
@@ -111,15 +99,14 @@ function PostProblem() {
               required
             >
               <option value="">Select Difficulty</option>
-              <option value="EASY">Easy</option>
-              <option value="MEDIUM">Medium</option>
-              <option value="HARD">Hard</option>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
             </select>
           </div>
 
           <div className="problem-form-group">
             <label htmlFor="description">Problem Description</label>
-
             <textarea
               id="description"
               name="description"
@@ -133,7 +120,6 @@ function PostProblem() {
 
           <div className="problem-form-group">
             <label htmlFor="requirements">Requirements</label>
-
             <textarea
               id="requirements"
               name="requirements"
@@ -146,7 +132,6 @@ function PostProblem() {
 
           <div className="problem-form-group">
             <label htmlFor="outcome">Expected Outcome</label>
-
             <textarea
               id="outcome"
               name="outcome"

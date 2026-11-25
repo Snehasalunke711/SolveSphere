@@ -1,71 +1,42 @@
+
 import { Link, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Loading from "../../components/Loading/Loading";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
-import { getProblemSubmissions } from "../../services/problemService";
+import { getProblemSubmissions, getProblemById } from "../../services/problemService";
 import "./ViewSubmissions.css";
-
-const fallbackSubmissions = [
-  {
-    id: 1,
-    title: "Smart Waste Route Optimizer",
-    solver: "Aarav Sharma",
-    tech: "React · FastAPI · Python · ML",
-    description:
-      "A data-driven waste monitoring and route optimization platform.",
-  },
-  {
-    id: 2,
-    title: "EcoRoute AI",
-    solver: "Meera Patel",
-    tech: "React · Flask · Python · OpenStreetMap",
-    description:
-      "An intelligent route planning system for efficient waste collection.",
-  },
-  {
-    id: 3,
-    title: "CleanCity Monitor",
-    solver: "Rahul Verma",
-    tech: "Flutter · Firebase · Python",
-    description:
-      "A smart monitoring application for tracking urban waste collection.",
-  },
-];
 
 function ViewSubmissions() {
   const { id } = useParams();
 
-  const [submissions, setSubmissions] = useState(fallbackSubmissions);
+  const [problem, setProblem] = useState(null);
+  const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const loadSubmissions = async () => {
+    const loadData = async () => {
+      setLoading(true);
+
       try {
-        const data = await getProblemSubmissions(id);
+        const [problemData, submissionData] = await Promise.all([
+          getProblemById(id),
+          getProblemSubmissions(id),
+        ]);
 
-        if (data && data.length > 0) {
-          setSubmissions(data);
-        } else {
-          setSubmissions([]);
-        }
-
+        setProblem(problemData);
+        setSubmissions(Array.isArray(submissionData) ? submissionData : []);
         setError("");
       } catch (err) {
-        console.error(err);
-
-        setError(
-          "Backend not connected yet. Showing sample submissions."
-        );
-
-        setSubmissions(fallbackSubmissions);
+        console.error("Failed to load problem submissions:", err);
+        setError(err.message || "Unable to load problem submissions.");
       } finally {
         setLoading(false);
       }
     };
 
-    loadSubmissions();
+    loadData();
   }, [id]);
 
   return (
@@ -82,8 +53,8 @@ function ViewSubmissions() {
         <h1>Review Submitted Solutions</h1>
 
         <p>
-          Explore solutions submitted by problem solvers and discover
-          promising approaches.
+          View solutions submitted by contributors and select the ones
+          that best solve your problem.
         </p>
       </section>
 
@@ -93,56 +64,54 @@ function ViewSubmissions() {
         <section className="submissions-content">
           {error && <ErrorMessage message={error} />}
 
-          <div className="submissions-summary">
-            <span>Problem #{id}</span>
+          {!error && (
+            <>
+              <div className="submissions-summary">
+                <span>
+                  {problem?.title || "Problem details unavailable"}
+                </span>
 
-            <strong>
-              {submissions.length} submissions available
-            </strong>
-          </div>
+                <strong>
+                  {submissions.length} submissions available
+                </strong>
+              </div>
 
-          {submissions.length === 0 ? (
-            <div className="empty-state">
-              <h2>No Submissions Yet</h2>
+              {submissions.length === 0 ? (
+                <div className="empty-state">
+                  <h2>No Submissions Yet</h2>
+                  <p>
+                    No one has submitted a solution for this problem yet.
+                  </p>
+                </div>
+              ) : (
+                <div className="submissions-list">
+                  {submissions.map((submission) => (
+                    <Link
+                      to={`/submission-review/${submission.id}`}
+                      className="submission-card"
+                      key={submission.id}
+                    >
+                      <div className="submission-card-content">
+                        <h2>
+                          {submission.solutionTitle || "Untitled Solution"}
+                        </h2>
 
-              <p>
-                No one has submitted a solution for this problem yet.
-              </p>
-            </div>
-          ) : (
-            <div className="submissions-list">
-              {submissions.map((submission) => (
-                <article
-                  className="submission-card"
-                  key={submission.id}
-                >
-                  <div className="submission-card-content">
-                    <span>
-                      SOLUTION #{submission.id}
-                    </span>
+                        <p>
+                          Submitted by{" "}
+                          <strong>
+                            {submission.submittedByName || "Unknown Contributor"}
+                          </strong>
+                        </p>
+                      </div>
 
-                    <h2>{submission.title}</h2>
-
-                    <p>{submission.description}</p>
-
-                    <div className="submission-meta">
-                      <span>
-                        By {submission.solver}
+                      <span className="submission-card-arrow">
+                        View Submission →
                       </span>
-
-                      <span>{submission.tech}</span>
-                    </div>
-                  </div>
-
-                  <Link
-                    to={`/submission-review/${submission.id}`}
-                    className="review-submission-button"
-                  >
-                    Review Solution
-                  </Link>
-                </article>
-              ))}
-            </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </section>
       )}

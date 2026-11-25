@@ -10,14 +10,12 @@ import solvesphere_backend.repository.ParticipationRepository;
 import solvesphere_backend.repository.ProblemRepository;
 import solvesphere_backend.repository.SubmissionRepository;
 import solvesphere_backend.repository.UserRepository;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 
 @Service
@@ -40,31 +38,56 @@ public class SubmissionService {
     }
 
     private User getAuthenticatedUser() {
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getName())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
 
         return userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    }
+
+    private User requireSolverRole() {
+        User user = getAuthenticatedUser();
+
+        if (!"solver".equalsIgnoreCase(user.getRole())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only solvers can submit solutions");
+        }
+
+        return user;
+    }
+
+    private User requireOwnerRole() {
+        User user = getAuthenticatedUser();
+
+        if (!"owner".equalsIgnoreCase(user.getRole())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only owners can review submissions");
+        }
+
+        return user;
     }
 
     private Problem getProblem(Long problemId) {
         return problemRepository.findById(problemId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "Problem not found with ID: " + problemId));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Problem not found with ID: " + problemId
+                ));
     }
 
     private Submission getSubmission(Long submissionId) {
         return submissionRepository.findById(submissionId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "Submission not found with ID: " + submissionId));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Submission not found with ID: " + submissionId
+                ));
     }
 
     @Transactional
     public SubmissionResponse createSubmission(Long problemId, CreateSubmissionRequest request) {
-        User user = getAuthenticatedUser();
+        User user = requireSolverRole();
         Problem problem = getProblem(problemId);
 
         if (!"OPEN".equalsIgnoreCase(problem.getStatus())) {
@@ -79,39 +102,78 @@ public class SubmissionService {
                     "You must join this problem before submitting a solution");
         }
 
-        boolean alreadySubmitted = submissionRepository
-                .existsByProblemIdAndSubmittedById(problemId, user.getId());
+        boolean alreadySubmitted = submissionRepository.existsByProblemIdAndSubmittedById(
+                problemId, user.getId()
+        );
 
         if (alreadySubmitted) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "You have already submitted a solution for this problem");
         }
 
-        if (request.getSolutionTitle() == null || request.getSolutionTitle().isBlank()
-                || request.getSolutionDescription() == null || request.getSolutionDescription().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Solution title and description are required");
-        }
+        validateRequest(request);
 
         Submission submission = new Submission();
         submission.setProblem(problem);
         submission.setSubmittedBy(user);
         submission.setSolutionTitle(request.getSolutionTitle());
         submission.setSolutionDescription(request.getSolutionDescription());
+        submission.setTechStack(request.getTechStack());
         submission.setGithubUrl(request.getGithubUrl());
         submission.setDemoUrl(request.getDemoUrl());
+        submission.setAdditionalNotes(request.getAdditionalNotes());
         submission.setStatus("PENDING");
 
-        Submission savedSubmission = submissionRepository.save(submission);
-        return convertToResponse(savedSubmission);
+        return convertToResponse(submissionRepository.save(submission));
+    }
+
+    @Transactional
+    public SubmissionResponse updateSubmission(Long submissionId, CreateSubmissionRequest request) {
+        User user = requireSolverRole();
+        Submission submission = getSubmission(submissionId);
+
+        if (!submission.getSubmittedBy().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You can only edit your own submission");
+        }
+
+        if (!"PENDING".equalsIgnoreCase(submission.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Only pending submissions can be edited");
+        }
+
+        if (!"OPEN".equalsIgnoreCase(submission.getProblem().getStatus())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Cannot edit a submission for a closed problem");
+        }
+
+        validateRequest(request);
+
+        submission.setSolutionTitle(request.getSolutionTitle());
+        submission.setSolutionDescription(request.getSolutionDescription());
+        submission.setTechStack(request.getTechStack());
+        submission.setGithubUrl(request.getGithubUrl());
+        submission.setDemoUrl(request.getDemoUrl());
+        submission.setAdditionalNotes(request.getAdditionalNotes());
+
+        return convertToResponse(submissionRepository.save(submission));
+    }
+
+    private void validateRequest(CreateSubmissionRequest request) {
+        if (request.getSolutionTitle() == null || request.getSolutionTitle().isBlank()
+                || request.getSolutionDescription() == null
+                || request.getSolutionDescription().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Solution title and description are required");
+        }
     }
 
     @Transactional(readOnly = true)
     public List<SubmissionResponse> getProblemSubmissions(Long problemId) {
-        User user = getAuthenticatedUser();
+        User user = requireOwnerRole();
         Problem problem = getProblem(problemId);
 
-        if (!problem.getOwner().getId().equals(user.getId())) {
+        if (problem.getOwner() == null || !problem.getOwner().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Only the problem owner can view all submissions");
         }
@@ -123,8 +185,22 @@ public class SubmissionService {
     }
 
     @Transactional(readOnly = true)
+    public SubmissionResponse getSubmissionById(Long submissionId) {
+        User user = requireOwnerRole();
+        Submission submission = getSubmission(submissionId);
+
+        if (submission.getProblem().getOwner() == null
+                || !submission.getProblem().getOwner().getId().equals(user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Only the problem owner can view this submission");
+        }
+
+        return convertToResponse(submission);
+    }
+
+    @Transactional(readOnly = true)
     public List<SubmissionResponse> getMySubmissions() {
-        User user = getAuthenticatedUser();
+        User user = requireSolverRole();
 
         return submissionRepository.findBySubmittedById(user.getId())
                 .stream()
@@ -134,15 +210,17 @@ public class SubmissionService {
 
     @Transactional
     public SubmissionResponse reviewSubmission(Long submissionId, String newStatus) {
-        User user = getAuthenticatedUser();
+        User user = requireOwnerRole();
         Submission submission = getSubmission(submissionId);
 
-        if (!submission.getProblem().getOwner().getId().equals(user.getId())) {
+        if (submission.getProblem().getOwner() == null
+                || !submission.getProblem().getOwner().getId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "Only the problem owner can review submissions");
         }
 
-        if (!"ACCEPTED".equals(newStatus) && !"REJECTED".equals(newStatus)
+        if (!"ACCEPTED".equals(newStatus)
+                && !"REJECTED".equals(newStatus)
                 && !"SELECTED".equals(newStatus)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Invalid submission status");
@@ -154,8 +232,9 @@ public class SubmissionService {
         }
 
         if ("SELECTED".equals(newStatus)) {
-            boolean alreadySelected = submissionRepository
-                    .existsByProblemIdAndStatus(submission.getProblem().getId(), "SELECTED");
+            boolean alreadySelected = submissionRepository.existsByProblemIdAndStatus(
+                    submission.getProblem().getId(), "SELECTED"
+            );
 
             if (alreadySelected) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT,
@@ -164,9 +243,8 @@ public class SubmissionService {
         }
 
         submission.setStatus(newStatus);
-        Submission updatedSubmission = submissionRepository.save(submission);
 
-        return convertToResponse(updatedSubmission);
+        return convertToResponse(submissionRepository.save(submission));
     }
 
     private SubmissionResponse convertToResponse(Submission submission) {
@@ -178,8 +256,10 @@ public class SubmissionService {
                 submission.getSubmittedBy().getName(),
                 submission.getSolutionTitle(),
                 submission.getSolutionDescription(),
+                submission.getTechStack(),
                 submission.getGithubUrl(),
                 submission.getDemoUrl(),
+                submission.getAdditionalNotes(),
                 submission.getStatus(),
                 submission.getSubmittedAt()
         );

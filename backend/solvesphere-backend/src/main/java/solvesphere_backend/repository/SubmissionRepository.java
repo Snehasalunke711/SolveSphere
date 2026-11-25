@@ -23,4 +23,6 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     long countBySubmittedById(Long userId);
 
     long countBySubmittedByIdAndStatus(Long userId, String status);
+
+    long countByProblemId(Long problemId);
 }

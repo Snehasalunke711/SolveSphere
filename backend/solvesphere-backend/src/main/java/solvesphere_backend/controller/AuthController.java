@@ -5,6 +5,7 @@ import solvesphere_backend.dto.RegisterRequest;
 import solvesphere_backend.dto.RegisterResponse;
 import solvesphere_backend.dto.LoginRequest;
 import solvesphere_backend.dto.LoginResponse;
+import solvesphere_backend.dto.CurrentUserResponse;
 import solvesphere_backend.service.UserService;
 
 import jakarta.validation.Valid;
@@ -13,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -45,11 +44,12 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Map<String, String>> getCurrentUser(
+    public ResponseEntity<CurrentUserResponse> getCurrentUser(
             Authentication authentication) {
 
-        return ResponseEntity.ok(
-            Map.of("email", authentication.getName())
-        );
+        CurrentUserResponse response =
+            userService.getCurrentUser(authentication.getName());
+
+        return ResponseEntity.ok(response);
     }
 }

@@ -2,6 +2,7 @@
 package solvesphere_backend.controller;
 
 import solvesphere_backend.dto.UserProfileResponse;
+import solvesphere_backend.dto.UpdateProfileRequest;
 import solvesphere_backend.service.UserProfileService;
 
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,20 @@ public class UserProfileController {
         UserProfileResponse response =
                 userProfileService.getProfileByEmail(
                         authentication.getName()
+                );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<UserProfileResponse> updateMyProfile(
+            Authentication authentication,
+            @RequestBody UpdateProfileRequest request) {
+
+        UserProfileResponse response =
+                userProfileService.updateProfile(
+                        authentication.getName(),
+                        request
                 );
 
         return ResponseEntity.ok(response);

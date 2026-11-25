@@ -4,6 +4,7 @@ package solvesphere_backend.controller;
 import solvesphere_backend.dto.CreateProblemRequest;
 import solvesphere_backend.dto.UpdateProblemRequest;
 import solvesphere_backend.dto.ProblemResponse;
+import solvesphere_backend.dto.OwnerProblemResponse;
 import solvesphere_backend.service.ProblemService;
 
 import jakarta.validation.Valid;
@@ -28,10 +29,17 @@ public class ProblemController {
     public ResponseEntity<ProblemResponse> createProblem(
             @Valid @RequestBody CreateProblemRequest request) {
 
-        ProblemResponse response =
-                problemService.createProblem(request);
+        ProblemResponse response = problemService.createProblem(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<OwnerProblemResponse>> getMyProblems() {
+
+        List<OwnerProblemResponse> problems = problemService.getMyProblems();
+
+        return ResponseEntity.ok(problems);
     }
 
     @GetMapping
@@ -42,9 +50,9 @@ public class ProblemController {
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "newest") String sortBy) {
 
-        List<ProblemResponse> problems =
-                problemService.getAllProblems(
-                        search, category, difficulty, status, sortBy);
+        List<ProblemResponse> problems = problemService.getAllProblems(
+                search, category, difficulty, status, sortBy
+        );
 
         return ResponseEntity.ok(problems);
     }
@@ -53,8 +61,7 @@ public class ProblemController {
     public ResponseEntity<ProblemResponse> getProblemById(
             @PathVariable Long id) {
 
-        ProblemResponse response =
-                problemService.getProblemById(id);
+        ProblemResponse response = problemService.getProblemById(id);
 
         return ResponseEntity.ok(response);
     }
@@ -64,8 +71,7 @@ public class ProblemController {
             @PathVariable Long id,
             @Valid @RequestBody UpdateProblemRequest request) {
 
-        ProblemResponse response =
-                problemService.updateProblem(id, request);
+        ProblemResponse response = problemService.updateProblem(id, request);
 
         return ResponseEntity.ok(response);
     }

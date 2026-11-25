@@ -4,11 +4,9 @@ package solvesphere_backend.controller;
 import solvesphere_backend.dto.CreateSubmissionRequest;
 import solvesphere_backend.dto.SubmissionResponse;
 import solvesphere_backend.service.SubmissionService;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 
@@ -27,9 +25,7 @@ public class SubmissionController {
             @PathVariable Long id,
             @RequestBody CreateSubmissionRequest request) {
 
-        SubmissionResponse response =
-                submissionService.createSubmission(id, request);
-
+        SubmissionResponse response = submissionService.createSubmission(id, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -37,16 +33,29 @@ public class SubmissionController {
     public ResponseEntity<List<SubmissionResponse>> getProblemSubmissions(
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(
-                submissionService.getProblemSubmissions(id)
-        );
+        return ResponseEntity.ok(submissionService.getProblemSubmissions(id));
+    }
+
+    @GetMapping("/api/submissions/{id}")
+    public ResponseEntity<SubmissionResponse> getSubmissionById(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(submissionService.getSubmissionById(id));
     }
 
     @GetMapping("/api/submissions/my")
     public ResponseEntity<List<SubmissionResponse>> getMySubmissions() {
 
+        return ResponseEntity.ok(submissionService.getMySubmissions());
+    }
+
+    @PutMapping("/api/submissions/{id}")
+    public ResponseEntity<SubmissionResponse> updateSubmission(
+            @PathVariable Long id,
+            @RequestBody CreateSubmissionRequest request) {
+
         return ResponseEntity.ok(
-                submissionService.getMySubmissions()
+                submissionService.updateSubmission(id, request)
         );
     }
 
@@ -55,8 +64,10 @@ public class SubmissionController {
             @PathVariable Long id,
             @RequestBody Map<String, String> request) {
 
-        SubmissionResponse response =
-                submissionService.reviewSubmission(id, request.get("status"));
+        SubmissionResponse response = submissionService.reviewSubmission(
+                id,
+                request.get("status")
+        );
 
         return ResponseEntity.ok(response);
     }
