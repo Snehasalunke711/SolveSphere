@@ -6,42 +6,44 @@ set "PROJECT=C:\Users\Lenovo\SolveSphere"
 set "BACKEND=%PROJECT%\backend\solvesphere-backend"
 set "FRONTEND=%PROJECT%\frontend"
 
-for /f "delims=" %%A in ('powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('DB_PASSWORD','User')"') do set "DB_PASSWORD=%%A"
+echo.
+echo ====================================
+echo       STARTING SOLVESPHERE
+echo ====================================
+echo.
 
-for /f "delims=" %%A in ('powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('JWT_SECRET','User')"') do set "JWT_SECRET=%%A"
+echo Starting Backend...
+start "SolveSphere Backend" powershell.exe -NoProfile -ExecutionPolicy Bypass -NoExit -File "%PROJECT%\Run-Backend.ps1"
 
-if not defined DB_PASSWORD (
-    echo ERROR: DB_PASSWORD is missing.
-    pause
-    exit /b 1
-)
+echo Waiting for Backend...
 
-if not defined JWT_SECRET (
-    echo ERROR: JWT_SECRET is missing.
-    pause
-    exit /b 1
-)
+for /L %%i in (1,1,60) do (
+    powershell -NoProfile -Command "try { $r=Invoke-WebRequest -UseBasicParsing http://localhost:8080/api/health -TimeoutSec 2; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }"
 
-echo Starting SolveSphere Backend...
-start "SolveSphere Backend" cmd /k "cd /d "%BACKEND%" && set DB_PASSWORD=%DB_PASSWORD% && set JWT_SECRET=%JWT_SECRET% && mvnw.cmd spring-boot:run"
+    if not errorlevel 1 goto BACKEND_READY
 
-echo Waiting for backend to become ready...
-
-:WAIT_BACKEND
-powershell -NoProfile -Command "try { $r=Invoke-WebRequest -UseBasicParsing http://localhost:8080/api/health -TimeoutSec 2; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }"
-
-if errorlevel 1 (
     timeout /t 2 /nobreak >nul
-    goto WAIT_BACKEND
 )
 
-echo Backend is ready!
+echo.
+echo ERROR: Backend did not start within 120 seconds.
+echo Check the SolveSphere Backend window for the actual error.
+pause
+exit /b 1
 
-echo Starting SolveSphere Frontend...
-start "SolveSphere Frontend" cmd /k "cd /d "%FRONTEND%" && npm.cmd run dev"
+:BACKEND_READY
+
+echo Backend started successfully!
+echo.
+echo Starting Frontend...
+
+start "SolveSphere Frontend" /D "%FRONTEND%" cmd /k "npm.cmd run dev"
 
 timeout /t 5 /nobreak >nul
 
 start http://localhost:5173
 
-echo SolveSphere is ready!
+echo.
+echo ====================================
+echo       SOLVESPHERE IS READY!
+echo ====================================
